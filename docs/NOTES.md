@@ -41,13 +41,26 @@ data["TotalCharges"] = data["TotalCharges"].fillna(0.0)
 | **Numerical** (biến số) | `tenure`, `MonthlyCharges`, `TotalCharges` | `StandardScaler` |
 | **Categorical** (biến phân loại) | `gender`, `Contract`, `PaymentMethod`, ... (16 cột) | `OneHotEncoder` |
 
+> 📌 **Về biến `tenure`:** Dịch nghĩa là **"Thời gian gắn bó"** hoặc **"Số tháng sử dụng dịch vụ"** (thâm niên khách hàng tính từ lúc ký hợp đồng đến thời điểm khảo sát, $0 \rightarrow 72$ tháng). Khách hàng có `tenure` thấp ($< 6$ tháng) có tỷ lệ rời bỏ rất cao do chưa quen dịch vụ.
+
 ### StandardScaler
 
 $$X_{\text{scaled}} = \frac{X - \mu}{\sigma}$$
 
-- Chuyển đổi feature về phân phối có **mean = 0, std = 1**.
-- Cần thiết cho Logistic Regression (sử dụng gradient-based optimization).
-- Các thuật toán tree-based (XGBoost, RF) không yêu cầu, nhưng đặt trong pipeline chung để đồng nhất.
+- Chuyển đổi feature về phân phối chuẩn hóa có **mean = 0, std = 1** (Z-score).
+- Cần thiết cho các mô hình tuyến tính / gradient-based (Logistic Regression). Tree-based (XGBoost, RF) không bắt buộc nhưng dùng chung pipeline để đồng nhất kiến trúc benchmark.
+
+#### ❓ Tại sao không scale thì biến có giá trị lớn (như TotalCharges) làm dự đoán bị lệch?
+
+So sánh miền giá trị thực tế trong tập dữ liệu:
+* `tenure`: $0 \rightarrow 72$ (tháng)
+* `MonthlyCharges`: $18.25 \rightarrow 118.75$ (USD)
+* `TotalCharges`: $0 \rightarrow 8,684.80$ (USD) — **lớn hơn hàng trăm lần!**
+
+Nếu để nguyên không chuẩn hóa, 3 vấn đề nghiêm trọng sẽ xảy ra:
+1. **Lấn át tín hiệu (Scale Dominance):** Trong tổ hợp tuyến tính $z = w_1 x_1 + w_2 x_2 + \dots$, số hạng $w_{\text{total}} \cdot X_{\text{total}}$ (hàng nghìn) sẽ áp đảo hoàn toàn các biến nhỏ (như `tenure` hay biến nhị phân 0/1 từ One-Hot), khiến mô hình gần như bỏ qua tiếng nói của các đặc trưng khác.
+2. **Lệch bước nhảy Gradient (Ill-conditioned optimization):** Đạo hàm cập nhật trọng số tỉ lệ thuận với giá trị đầu vào ($\frac{\partial L}{\partial w} \propto x$). Biến quá lớn làm mặt phẳng mất mát (loss surface) bị kéo dẹt theo một chiều, gradient dao động dữ dội, mô hình học rất chậm, khó hội tụ hoặc rơi vào nghiệm cục bộ sai lệch.
+3. **Bị phạt bất công bởi Regularization (L1/L2):** Các hàm phạt L1/L2 phạt đều mọi trọng số $w$ theo cùng một hệ số $\lambda$. Vì $x_{\text{total}}$ quá lớn nên chỉ cần $w_{\text{total}}$ rất nhỏ là đủ ảnh hưởng; ngược lại các biến có scale nhỏ cần $w$ lớn hơn thì lại bị penalty triệt tiêu về gần 0 một cách bất công.
 
 ### OneHotEncoder
 

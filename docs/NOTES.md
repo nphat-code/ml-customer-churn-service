@@ -43,10 +43,20 @@ data["TotalCharges"] = data["TotalCharges"].fillna(0.0)
 
 ### StandardScaler
 
-$$X_{\text{scaled}} = \frac{X - \mu}{\sigma}$$
+$$z = \frac{x - \mu}{\sigma}$$
 
-- Chuyển đổi feature về phân phối chuẩn hóa có **mean = 0, std = 1** (Z-score).
-- Cần thiết cho các mô hình tuyến tính / gradient-based (Logistic Regression). Tree-based (XGBoost, RF) không bắt buộc nhưng dùng chung pipeline để đồng nhất kiến trúc benchmark.
+#### 1. Bản chất toán học của $\mu$ và $\sigma$
+* **Kỳ vọng / Trung bình mẫu ($\mu$):** Xác định trọng tâm của phân phối dữ liệu:
+  $$\mu = \frac{1}{N} \sum_{i=1}^{N} x_i$$
+* **Độ lệch chuẩn ($\sigma$ - Standard Deviation):** Đo mức độ phân tán của dữ liệu quanh giá trị trung bình $\mu$:
+  $$\sigma = \sqrt{\frac{1}{N} \sum_{i=1}^{N} (x_i - \mu)^2}$$
+  *(Phần bên trong căn $\sigma^2$ là Phương sai - Variance; bình phương $(x_i - \mu)^2$ giúp triệt tiêu dấu âm và phạt nặng các điểm lệch xa tâm).*
+* **Lưu ý kỹ thuật:** `scikit-learn`'s `StandardScaler` tính $\sigma$ với bậc tự do `ddof=0` (chia cho $N$, tổng thể), khác với `pandas.Series.std()` mặc định `ddof=1` (chia cho $N-1$, hiệu chỉnh Bessel cho mẫu).
+
+#### 2. Ý nghĩa cốt lõi của $\text{mean} = 0$ và $\text{std} = 1$
+* **$\text{mean} = 0$ (Dời tâm):** Lấy $x - \mu$ giúp dịch chuyển trục đối xứng của dữ liệu về gốc tọa độ $0$. Điểm có $z = 0$ tương ứng giá trị trung bình; $z > 0$ là cao hơn trung bình, $z < 0$ là thấp hơn trung bình.
+* **$\text{std} = 1$ (Chuẩn hóa đơn vị đo):** Chia cho $\sigma$ giúp chuyển đổi mọi thang đo vật lý (tháng, USD) thành cùng một thước đo trừu tượng: **"khoảng cách lệch bao nhiêu lần $\sigma$"**. Điểm $z = +2$ nghĩa là cao hơn trung bình đúng $2\sigma$.
+* Cần thiết cho các mô hình tuyến tính / gradient-based (Logistic Regression). Tree-based (XGBoost, RF) không bắt buộc nhưng dùng chung pipeline để đồng nhất kiến trúc benchmark.
 
 #### ❓ Tại sao không scale thì biến có giá trị lớn (như TotalCharges) làm dự đoán bị lệch?
 

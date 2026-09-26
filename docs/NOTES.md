@@ -54,8 +54,16 @@ $$z = \frac{x - \mu}{\sigma}$$
 * **Lưu ý kỹ thuật:** `scikit-learn`'s `StandardScaler` tính $\sigma$ với bậc tự do `ddof=0` (chia cho $N$, tổng thể), khác với `pandas.Series.std()` mặc định `ddof=1` (chia cho $N-1$, hiệu chỉnh Bessel cho mẫu).
 
 #### 2. Ý nghĩa cốt lõi của $\text{mean} = 0$ và $\text{std} = 1$
-* **$\text{mean} = 0$ (Dời tâm):** Lấy $x - \mu$ giúp dịch chuyển trục đối xứng của dữ liệu về gốc tọa độ $0$. Điểm có $z = 0$ tương ứng giá trị trung bình; $z > 0$ là cao hơn trung bình, $z < 0$ là thấp hơn trung bình.
+*Lưu ý: $\text{mean} = 0$ và $\text{std} = 1$ là thuộc tính của tập giá trị mới $z$ **sau khi chuẩn hóa**, không phải của dữ liệu gốc.*
+
+* **Chứng minh toán học:**
+  * Kỳ vọng của biến chuẩn hóa $z$:
+    $$E[z] = E\left[\frac{X - \mu}{\sigma}\right] = \frac{E[X] - \mu}{\sigma} = \frac{\mu - \mu}{\sigma} = \mathbf{0}$$
+  * Phương sai của biến chuẩn hóa $z$:
+    $$\text{Var}(z) = \text{Var}\left(\frac{X - \mu}{\sigma}\right) = \frac{1}{\sigma^2} \text{Var}(X - \mu) = \frac{\text{Var}(X)}{\sigma^2} = \frac{\sigma^2}{\sigma^2} = \mathbf{1} \implies \text{Std}(z) = 1$$
+* **$\text{mean} = 0$ (Dời tâm về gốc tọa độ):** Biến số `0` trở thành cột mốc quy chiếu trung bình (baseline). Điểm có $z = 0$ đại diện cho mức trung bình của toàn bộ dữ liệu; $z > 0$ là cao hơn trung bình, $z < 0$ là thấp hơn trung bình.
 * **$\text{std} = 1$ (Chuẩn hóa đơn vị đo):** Chia cho $\sigma$ giúp chuyển đổi mọi thang đo vật lý (tháng, USD) thành cùng một thước đo trừu tượng: **"khoảng cách lệch bao nhiêu lần $\sigma$"**. Điểm $z = +2$ nghĩa là cao hơn trung bình đúng $2\sigma$.
+* **Quy tắc thực nghiệm $3\sigma$ & Phát hiện ngoại lai (Outlier Detection):** Đối với dữ liệu gần phân phối chuẩn, $99.7\%$ giá trị sẽ rơi vào đoạn $[-3, +3]$. Một mẫu có $|z| > 3$ được xem là ngoại lai hiếm gặp (xác suất $< 0.3\%$).
 * Cần thiết cho các mô hình tuyến tính / gradient-based (Logistic Regression). Tree-based (XGBoost, RF) không bắt buộc nhưng dùng chung pipeline để đồng nhất kiến trúc benchmark.
 
 #### ❓ Tại sao không scale thì biến có giá trị lớn (như TotalCharges) làm dự đoán bị lệch?

@@ -41,8 +41,6 @@ data["TotalCharges"] = data["TotalCharges"].fillna(0.0)
 | **Numerical** (biến số) | `tenure`, `MonthlyCharges`, `TotalCharges` | `StandardScaler` |
 | **Categorical** (biến phân loại) | `gender`, `Contract`, `PaymentMethod`, ... (16 cột) | `OneHotEncoder` |
 
-> 📌 **Về biến `tenure`:** Dịch nghĩa là **"Thời gian gắn bó"** hoặc **"Số tháng sử dụng dịch vụ"** (thâm niên khách hàng tính từ lúc ký hợp đồng đến thời điểm khảo sát, $0 \rightarrow 72$ tháng). Khách hàng có `tenure` thấp ($< 6$ tháng) có tỷ lệ rời bỏ rất cao do chưa quen dịch vụ.
-
 ### StandardScaler
 
 $$X_{\text{scaled}} = \frac{X - \mu}{\sigma}$$

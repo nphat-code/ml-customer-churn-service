@@ -80,9 +80,29 @@ Nếu để nguyên không chuẩn hóa, 3 vấn đề nghiêm trọng sẽ xả
 
 ### OneHotEncoder
 
-- Biến `Contract = ["Month-to-month", "One year", "Two year"]` → 3 cột nhị phân.
-- `handle_unknown="ignore"`: khi gặp category mới lúc inference → trả vector toàn 0, không crash.
-- `sparse_output=False`: trả dense array thay vì sparse matrix → tương thích tốt hơn với XGBoost/LightGBM.
+Phương pháp chuyển đổi biến định danh (Categorical Features) thành các vector nhị phân $\{0, 1\}$ trong không gian vector nhiều chiều.
+
+#### 1. Tại sao phải tách mỗi giá trị thành một Feature (cột) riêng?
+* **Độc lập trọng số:** Cho phép mô hình học một hệ số tác động $w$ riêng biệt cho từng trạng thái danh mục:
+  $$z = (w_{\text{Month}} \cdot x_{\text{Month}}) + (w_{\text{1Year}} \cdot x_{\text{1Year}}) + (w_{\text{2Year}} \cdot x_{\text{2Year}}) + \dots$$
+  Mô hình có thể tự do gán trọng số dương cao cho gói hợp đồng rủi ro ($w_{\text{Month}} > 0$) và trọng số âm cho gói giữ chân khách ($w_{\text{2Year}} < 0$).
+* **Hỗ trợ phân nhánh nhị phân (Binary Split):** Trong các thuật toán dạng cây (XGBoost, Random Forest), mỗi cột nhị phân cho phép cây đặt câu hỏi rẽ nhánh đơn giản và tối ưu: *"Có phải là Month-to-month hay không?"* (Đúng rẽ trái, Sai rẽ phải).
+
+#### 2. Cơ chế nhị phân $\{0, 1\}$ và Tính trực giao (Orthogonality)
+* **Cơ chế công tắc đóng/ngắt (Switching Mechanism):**
+  * Giá trị `1` (Hot): Kích hoạt trọng số tương ứng cộng vào hàm dự đoán ($w \cdot 1 = w$).
+  * Giá trị `0` (Cold): Triệt tiêu hoàn toàn ảnh hưởng của các trạng thái không được chọn ($w \cdot 0 = 0$).
+* **Tính bình đẳng hình học (Bản chất trực giao):**
+  Các vector mã hóa (như $[1, 0, 0], [0, 1, 0], [0, 0, 1]$) vuông góc từng đôi một trong không gian $\mathbb{R}^k$ (tích vô hướng $= 0$) và có khoảng cách Euclid bằng nhau giữa mọi cặp ($\sqrt{2}$). Điều này loại bỏ hoàn toàn sự áp đặt thứ bậc toán học sai lệch so với Label Encoding (0, 1, 2).
+
+#### 3. Cơ chế ghép nối vector (Feature Concatenation & Fixed Coordinates)
+Khi nhiều đặc trưng cùng sinh ra vector nhị phân giống nhau (ví dụ: `Contract` và `InternetService` đều có trạng thái sinh ra `[1, 0, 0]`), mô hình không bị nhầm lẫn nhờ cơ chế:
+* **Nối tiếp cố định tọa độ:** Toàn bộ $43$ cột One-Hot cùng $3$ cột số được ghép thành một vector đặc trưng duy nhất có số chiều cố định $D = 46$.
+* **Trọng số gắn với chỉ số cột (Index):** Số `1` ở cột `Contract_Month` (vị trí $i$) nhân với $w_i$, hoàn toàn tách biệt với số `1` ở cột `Internet_DSL` (vị trí $j$) nhân với $w_j$ ($w_i \neq w_j$).
+
+#### 4. Cấu hình kỹ thuật trong dự án ([src/pipeline.py](file:///c:/Study/HK1Nam3/ML/Project/src/pipeline.py#L15-L19))
+* `handle_unknown="ignore"`: Khi dữ liệu suy luận (inference qua API) xuất hiện giá trị danh mục mới lạ, encoder tự động gán vector toàn số `0` thay vì báo lỗi dừng hệ thống.
+* `sparse_output=False`: Xuất trực tiếp dense numpy array thay vì ma trận thưa (sparse matrix), tối ưu cho quá trình xử lý của XGBoost và LightGBM.
 
 ### ColumnTransformer
 

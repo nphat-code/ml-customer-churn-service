@@ -6,138 +6,84 @@
 
 ---
 
-## 🗺️ Tổng quan các Phase
+## 🗺️ Tổng quan các Phase & Yêu cầu môn học (`note.txt`)
 
-| Phase | Tên | Trạng thái |
-| :---: | :--- | :---: |
-| 1 | Khởi tạo dự án & Cấu trúc thư mục | ✅ Hoàn thành |
-| 2 | Dữ liệu & Tiền xử lý (Data Pipeline) | ✅ Hoàn thành |
-| 3 | Huấn luyện & Đánh giá mô hình | ✅ Hoàn thành |
-| 4 | REST API Service (FastAPI) | ✅ Hoàn thành |
-| 5 | Kiểm thử tự động (Testing) | ✅ Hoàn thành |
-| 6 | Tài liệu kỹ thuật (Documentation) | ✅ Hoàn thành |
-| 7 | Nâng cao & Mở rộng (Optional) | 🔲 Chưa thực hiện |
+### Đối chiếu 3 Hợp phần Project (Tỷ trọng 50% điểm số):
+| Hợp phần theo `note.txt` | Yêu cầu chi tiết | Trạng thái thực tế | Ghi chú kỹ thuật |
+| :--- | :--- | :---: | :--- |
+| **Project 1: Backend REST API** | • Model as a Service (Python, No UI)<br>• Input: Sample JSON; Output: Result JSON | **✅ Hoàn thành** | FastAPI, Pydantic schemas, Health check, `/api/v1/predict` |
+| **Project 2: Frontend / Demo UI** | • Ứng dụng demo có giao diện người dùng<br>• Gợi ý: Streamlit, React, hoặc HF Space | **🔲 Cần làm** | Xây dựng Streamlit app cho phép nhập liệu, gạt slider, gọi API hiển thị kết quả trực quan |
+| **Project 3: Jupyter Notebooks** | • Notebooks chuẩn cấu trúc dự án ML<br>• Lưu lại toàn bộ các thử nghiệm (*experiments*) | **🔲 Cần làm** | Tạo `notebooks/customer_churn_experiments.ipynb` (EDA, huấn luyện, so sánh, visualizations) |
 
 ---
 
-## Phase 1: Khởi tạo dự án & Cấu trúc thư mục ✅
+## 📌 Tổng hợp công việc: ĐÃ LÀM vs CẦN LÀM
 
-- [x] Tạo cấu trúc thư mục chuẩn (`src/`, `app/`, `data/`, `models/`, `notebooks/`, `docs/`, `tests/`)
-- [x] Cấu hình `.gitignore` (loại bỏ `venv/`, `__pycache__/`, `*.joblib`, `data/*.csv`)
-- [x] Viết `requirements.txt` đầy đủ các thư viện
-- [x] Viết `README.md` tổng quan dự án
-- [x] Thiết lập `AGENTS.md` (quy tắc code, quy trình git)
-- [x] Khởi tạo Git repository, push lên GitHub
+### 1. Những việc ĐÃ LÀM (Completed) ✅
 
-**Commit liên quan:**
-- `9e1e997` — `feat: initialize customer churn prediction ML project structure and docs`
+* **Khởi tạo & Kiến trúc dự án:**
+  - [x] Thiết lập cấu trúc thư mục chuẩn công nghiệp: `src/`, `app/`, `data/`, `models/`, `notebooks/`, `docs/`, `tests/`.
+  - [x] Cấu hình file môi trường và phụ thuộc `requirements.txt` (FastAPI, XGBoost, Scikit-Learn, LightGBM, v.v.).
+  - [x] Quy chuẩn quy tắc dự án trong `AGENTS.md` (không comment thừa, tuân thủ git flow, ghi chép kiến thức chuyên sâu).
 
----
+* **Dữ liệu & Tiền xử lý (Data Pipeline):**
+  - [x] Thu thập và chuẩn hóa tập dữ liệu viễn thông Kaggle Telco Customer Churn (7,043 dòng, 21 cột).
+  - [x] Xử lý missing values: ép kiểu `TotalCharges` về dạng số và gán giá trị $0.0$ cho khách hàng mới (`tenure = 0`).
+  - [x] Xây dựng `ColumnTransformer` tích hợp:
+    - `StandardScaler` cho biến số (`tenure`, `MonthlyCharges`, `TotalCharges`).
+    - `OneHotEncoder` cho 16 biến phân loại (với `handle_unknown="ignore"`, `sparse_output=False`).
+  - [x] Phân chia tập dữ liệu chuẩn hóa: Stratified 80/20 giữ nguyên tỷ lệ nhãn Churn/Retain.
 
-## Phase 2: Dữ liệu & Tiền xử lý (Data Pipeline) ✅
+* **Huấn luyện, So sánh & Serialize Mô hình:**
+  - [x] Xây dựng pipeline thử nghiệm và so sánh tự động 4 thuật toán: Logistic Regression, Random Forest, XGBoost, LightGBM.
+  - [x] Xử lý mất cân bằng dữ liệu: áp dụng `scale_pos_weight` cho XGBoost và `class_weight="balanced"` cho các mô hình còn lại.
+  - [x] Đánh giá toàn diện các chỉ số (Accuracy, Precision, Recall, F1, ROC-AUC).
+  - [x] Lựa chọn mô hình tối ưu: **XGBoost** với **ROC-AUC = 0.8435**, **Recall = 0.8021** (phát hiện trên 80% khách hàng có ý định rời bỏ).
+  - [x] Đóng gói trọn vẹn Preprocessing + Model thành 1 file duy nhất `models/best_churn_pipeline.joblib`.
+  - [x] Xuất kết quả benchmark chuẩn hóa ra `docs/model_benchmark.json`.
 
-- [x] Thu thập dữ liệu Kaggle Telco Customer Churn (~7,043 mẫu, 21 features)
-- [x] Module `src/data_loader.py`: Đọc CSV, xử lý `TotalCharges` (string → float, điền missing), chia train/test (80/20, stratified)
-- [x] Module `src/pipeline.py`: Xây dựng `ColumnTransformer` kết hợp `StandardScaler` (biến số) + `OneHotEncoder` (biến phân loại)
-- [x] Xử lý mất cân bằng lớp qua `scale_pos_weight` trong XGBoost
+* **Xây dựng REST API Service (Project 1 - FastAPI):**
+  - [x] Định nghĩa schema Pydantic kiểm soát chặt chẽ kiểu dữ liệu đầu vào và đầu ra (`app/schemas.py`).
+  - [x] Tích hợp logic phân tầng rủi ro (Low / Medium / High) và công cụ khuyến nghị can thiệp theo luật nghiệp vụ (`app/service.py`).
+  - [x] Xây dựng các endpoints chuẩn REST:
+    - `GET /`: Metadata dịch vụ.
+    - `GET /health`: Kiểm tra trạng thái hoạt động và load model.
+    - `POST /api/v1/predict`: Dự đoán thời gian thực cho một khách hàng.
+  - [x] Tích hợp tự động Swagger UI (`/docs`) và Redoc (`/redoc`).
 
-**Commit liên quan:**
-- `8484552` — `feat: setup project rules, ml pipeline, and fastapi service structure`
+* **Kiểm thử tự động (Testing):**
+  - [x] Xây dựng bộ test API tự động với `pytest` và `httpx.AsyncClient` / `TestClient` (`tests/test_api.py`).
+  - [x] Kiểm thử 4/4 kịch bản passed (root endpoint, health check, validation error 422, và predict success 200).
 
----
-
-## Phase 3: Huấn luyện & Đánh giá mô hình ✅
-
-- [x] Module `src/train.py`: Script huấn luyện tự động, so sánh 4 thuật toán
-- [x] Benchmark 4 mô hình: Logistic Regression, Random Forest, XGBoost, LightGBM
-- [x] Chọn mô hình tối ưu dựa trên ROC-AUC + Recall
-- [x] Serialize pipeline tối ưu → `models/best_churn_pipeline.joblib`
-- [x] Xuất kết quả benchmark → `docs/model_benchmark.json`
-
-**Kết quả Benchmark:**
-
-| Mô hình | Accuracy | Precision | Recall | F1-Score | ROC-AUC |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **XGBoost (Best)** | **0.7580** | **0.5291** | **0.8021** | **0.6376** | **0.8435** |
-| Random Forest | 0.7601 | 0.5331 | 0.7754 | 0.6318 | 0.8414 |
-| LightGBM | 0.7580 | 0.5299 | 0.7807 | 0.6314 | 0.8414 |
-| Logistic Regression | 0.7381 | 0.5043 | 0.7834 | 0.6136 | 0.8415 |
-
-**Mô hình được chọn:** XGBoost — ROC-AUC cao nhất (0.8435), Recall tốt nhất (0.8021) giúp giảm thiểu bỏ sót khách hàng có ý định rời bỏ.
-
-**Commit liên quan:**
-- `8484552` — `feat: setup project rules, ml pipeline, and fastapi service structure`
-- `cd1340a` — `docs: add benchmark results and httpx test dependency`
+* **Tài liệu học thuật & Kỹ thuật (Documentation):**
+  - [x] `docs/API_SPEC.md`: Đặc tả chi tiết các endpoint API, input/output JSON schemas.
+  - [x] `docs/MODEL_REPORT.md`: Báo cáo kỹ thuật về mô hình, phân tích dữ liệu và trade-offs.
+  - [x] `docs/NOTES.md`: Tài liệu chuyên sâu về toán học ML (chứng minh StandardScaler, bản chất trực giao One-Hot, cơ chế GLM / Logit / Sigmoid / BCE / L-BFGS của Logistic Regression).
+  - [x] `docs/PRESENTATION_NOTES.md`: Kịch bản thuyết trình và bộ câu hỏi phản biện bảo vệ đồ án.
 
 ---
 
-## Phase 4: REST API Service (FastAPI) ✅
+### 2. Những việc CẦN LÀM (To-Do) 🔲
 
-- [x] `app/schemas.py`: Định nghĩa Pydantic schemas validate input (19 features) + output (prediction, probability, risk_level, recommendation)
-- [x] `app/service.py`: Logic load model từ joblib, inference pipeline, phân tầng rủi ro (Low/Medium/High), sinh khuyến nghị can thiệp tự động
-- [x] `app/main.py`: Khai báo routes (`GET /`, `GET /health`, `POST /api/v1/predict`), lifespan event load model khi khởi động
-- [x] Swagger UI tự động tại `/docs`
+#### 🎯 Nhóm nhiệm vụ bắt buộc theo `note.txt`:
 
-**Endpoints đã triển khai:**
+1. **Xây dựng Jupyter Notebooks lưu vết thực nghiệm (Project 3):**
+   - [ ] Tạo file `notebooks/customer_churn_experiments.ipynb` hoàn chỉnh theo quy trình chuẩn Data Science:
+     - **Phần 1: EDA & Khám phá dữ liệu:** Vẽ biểu đồ phân phối biến mục tiêu (mất cân bằng), mối quan hệ giữa `tenure`, `MonthlyCharges`, `Contract` với `Churn`.
+     - **Phần 2: Data Preprocessing:** Minh họa trực quan các bước scale và mã hóa One-Hot.
+     - **Phần 3: Huấn luyện & So sánh mô hình:** Code chạy thực nghiệm 4 mô hình (Logistic Regression, Random Forest, LightGBM, XGBoost).
+     - **Phần 4: Đánh giá & Trực quan hóa kết quả:** Vẽ biểu đồ ROC Curve so sánh 4 mô hình, vẽ ma trận nhầm lẫn (Confusion Matrix) và Feature Importance của mô hình XGBoost.
 
-| Method | Path | Mô tả |
-| :---: | :--- | :--- |
-| `GET` | `/` | Thông tin dịch vụ |
-| `GET` | `/health` | Health check + trạng thái model |
-| `POST` | `/api/v1/predict` | Dự đoán churn cho 1 khách hàng |
+2. **Xây dựng ứng dụng Demo UI tương tác (Project 2):**
+   - [ ] Xây dựng app giao diện người dùng bằng **Streamlit** (`app_ui/streamlit_app.py` hoặc `streamlit_app.py`):
+     - Form nhập liệu trực quan với sliders (tenure, cước phí) và dropdowns (loại hợp đồng, dịch vụ internet,...).
+     - Nút bấm *"Dự đoán rủi ro"* gọi trực tiếp vào API `POST /api/v1/predict`.
+     - Hiển thị kết quả bằng metric cards, thanh đo xác suất trực quan (Gauge chart), nhãn phân loại rủi ro (Xanh/Vàng/Đỏ) và danh sách hành động khuyến nghị giữ chân khách hàng.
 
-**Commit liên quan:**
-- `8484552` — `feat: setup project rules, ml pipeline, and fastapi service structure`
-
----
-
-## Phase 5: Kiểm thử tự động (Testing) ✅
-
-- [x] `tests/test_api.py`: 4 test cases sử dụng `FastAPI TestClient`
-  - [x] `test_root` — kiểm tra endpoint root trả về đúng format
-  - [x] `test_health` — kiểm tra health check có trường `status` và `model_loaded`
-  - [x] `test_predict_endpoint_validation_error` — gửi payload rỗng nhận 422
-  - [x] `test_predict_single_success` — gửi payload hợp lệ, kiểm tra prediction/probability/risk_level
-- [x] Kết quả: **4/4 tests passed** ✅
-
-**Commit liên quan:**
-- `8484552` — `feat: setup project rules, ml pipeline, and fastapi service structure`
-
----
-
-## Phase 6: Tài liệu kỹ thuật (Documentation) ✅
-
-- [x] `README.md`: Hướng dẫn cài đặt, chạy thử, cấu trúc thư mục
-- [x] `docs/MODEL_REPORT.md`: Báo cáo kỹ thuật mô hình (bài toán, dữ liệu, benchmark, XAI, pipeline)
-- [x] `docs/API_SPEC.md`: Đặc tả endpoint, request/response format, error codes
-- [x] `docs/model_benchmark.json`: Kết quả benchmark dạng JSON có cấu trúc
-- [x] `docs/PLAN.md`: File kế hoạch và tiến trình dự án (file này)
-
-**Commit liên quan:**
-- `9e1e997` — `feat: initialize customer churn prediction ML project structure and docs`
-- `cd1340a` — `docs: add benchmark results and httpx test dependency`
-
----
-
-## Phase 7: Nâng cao & Mở rộng (Optional) 🔲
-
-- [ ] **Jupyter Notebooks minh họa:**
-  - [ ] `notebooks/01_eda.ipynb` — Khám phá dữ liệu, trực quan hóa phân phối, tương quan
-  - [ ] `notebooks/02_model_training.ipynb` — Huấn luyện, so sánh mô hình có visualization
-- [ ] **Explainable AI (XAI) API:**
-  - [ ] Tích hợp SHAP values vào response của `/api/v1/predict`
-  - [ ] Endpoint `GET /api/v1/explain/{customer_id}` trả về SHAP force plot
-- [ ] **Batch Prediction:**
-  - [ ] Hoàn thiện endpoint `POST /api/v1/predict/batch` cho dự đoán hàng loạt
-- [ ] **Container hóa (Docker):**
-  - [ ] Viết `Dockerfile` multi-stage build
-  - [ ] Viết `docker-compose.yml`
-- [ ] **CI/CD:**
-  - [ ] GitHub Actions workflow chạy test tự động khi push
-- [ ] **Cải thiện mô hình:**
-  - [ ] Hyperparameter tuning với Optuna/GridSearchCV
-  - [ ] Thử nghiệm thêm CatBoost, SVM
-  - [ ] Feature engineering nâng cao (interaction features, binning)
+#### 🛠️ Nhóm nhiệm vụ hoàn thiện & nâng cao chất lượng code:
+3. **Cập nhật Schema Pydantic:** Sửa các warning `example=` thành `json_schema_extra` trong `app/schemas.py`.
+4. **Cập nhật bảng số liệu trong MODEL_REPORT.md:** Đồng bộ bảng chỉ số thực tế từ `docs/model_benchmark.json`.
+5. **Đóng gói Docker (Tùy chọn nâng cao):** Viết `Dockerfile` và `docker-compose.yml` để chạy cả FastAPI backend và Streamlit frontend cùng lúc.
 
 ---
 
@@ -145,15 +91,12 @@
 
 | Thời gian | Hash | Message |
 | :--- | :---: | :--- |
-| 2026-09-26 13:18 | `9e1e997` | `feat: initialize customer churn prediction ML project structure and docs` |
-| 2026-09-26 14:52 | `8484552` | `feat: setup project rules, ml pipeline, and fastapi service structure` |
-| 2026-09-27 05:06 | `cd1340a` | `docs: add benchmark results and httpx test dependency` |
-
----
-
-## ⚠️ Vấn đề đã phát hiện & Ghi chú
-
-1. **Pydantic deprecation warnings (20 warnings):** `schemas.py` dùng `example=` trong `Field()` — cần chuyển sang `json_schema_extra` hoặc `examples=[]` để tương thích Pydantic V3.
-2. **MODEL_REPORT.md chưa cập nhật benchmark:** Bảng benchmark trong file vẫn còn giá trị `TBD`, cần đồng bộ với `model_benchmark.json`.
-3. **Thiếu `httpx` trong requirements.txt ban đầu:** Đã bổ sung để `FastAPI TestClient` hoạt động.
-4. **Notebooks trống:** Thư mục `notebooks/` chỉ có `.gitkeep`, chưa có notebook EDA và training.
+| 2026-10-03 | `f0e7cc7` | `docs: enrich mathematical theory and optimization details for Logistic Regression` |
+| 2026-10-03 | `ccdb5fa` | `docs: enrich OneHotEncoder mathematical principles and concatenation mechanism in NOTES.md` |
+| 2026-10-03 | `1cf59c6` | `docs: add presentation guide and defense QA notes` |
+| 2026-10-03 | `0834d39` | `docs: add mathematical proof for standardized mean and variance in NOTES.md` |
+| 2026-10-03 | `3a5df0b` | `docs: add mathematical formulas for mean, standard deviation, and z-score to NOTES.md` |
+| 2026-10-03 | `6c59925` | `docs: add rule for documentation standards and remove trivial notes` |
+| 2026-09-27 | `cd1340a` | `docs: add benchmark results and httpx test dependency` |
+| 2026-09-26 | `8484552` | `feat: setup project rules, ml pipeline, and fastapi service structure` |
+| 2026-09-26 | `9e1e997` | `feat: initialize customer churn prediction ML project structure and docs` |

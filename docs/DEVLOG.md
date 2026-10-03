@@ -11,9 +11,11 @@ File nhật ký theo dõi tiến trình thực hiện đồ án Customer Churn P
   - **Định hướng đồ án:** Phân tích kỹ nội dung file `note.txt` (cơ cấu điểm 10-40-50, 3 Hợp phần: Backend REST API, Frontend Demo UI, Jupyter Notebooks).
   - **Quản lý tiến độ:** Cập nhật bảng đối chiếu công việc ĐÃ LÀM và CẦN LÀM vào `docs/PLAN.md`.
   - **Hệ thống hóa nhật ký:** Tạo mới `docs/EXPERIMENTS.md` (lưu vết 4 thử nghiệm mô hình theo yêu cầu môn học) và `docs/DEVLOG.md` (nhật ký tiến độ phát triển).
+  - **Tối ưu hóa Code & Docs:** Cập nhật Pydantic fields sang `json_schema_extra` trong `app/schemas.py` loại bỏ triệt để 20 deprecation warnings, đồng bộ số liệu benchmark thực tế vào `docs/MODEL_REPORT.md`.
 * **Git Commits:**
   - `f0e7cc7` — `docs: enrich mathematical theory and optimization details for Logistic Regression`
   - `cfeb7ec` — `docs: align project plan with course requirements and track tasks`
+  - `ea0e37e` — `docs: add ML experiment tracking log and project devlog`
 * **Vấn đề gặp phải & Giải pháp:**
   - *Vấn đề:* Shell Windows PowerShell không nhận cú pháp nối lệnh `&&` của Bash.
   - *Giải pháp:* Chuyển đổi sang dấu chấm phẩy `;` khi thực thi chuỗi lệnh git trong PowerShell.

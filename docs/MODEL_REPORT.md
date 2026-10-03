@@ -38,10 +38,10 @@ So sánh tối thiểu 4 thuật toán:
 
 | Mô hình | Accuracy | Precision (Class 1) | Recall (Class 1) | F1-Score | ROC-AUC |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| Logistic Regression | *TBD* | *TBD* | *TBD* | *TBD* | *TBD* |
-| Random Forest | *TBD* | *TBD* | *TBD* | *TBD* | *TBD* |
-| XGBoost | *TBD* | *TBD* | *TBD* | *TBD* | *TBD* |
-| **LightGBM (Tuned)** | *TBD* | *TBD* | *TBD* | *TBD* | *TBD* |
+| **XGBoost (Best)** | **0.7580** | **0.5291** | **0.8021** | **0.6376** | **0.8435** |
+| Random Forest | 0.7601 | 0.5331 | 0.7754 | 0.6318 | 0.8414 |
+| LightGBM | 0.7580 | 0.5299 | 0.7807 | 0.6314 | 0.8414 |
+| Logistic Regression (Baseline) | 0.7381 | 0.5043 | 0.7834 | 0.6136 | 0.8415 |
 
 ---
 

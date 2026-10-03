@@ -1,0 +1,18 @@
+Chuyen can (10%)
+Seminar (40%): thay phan cong
+Project (50%):
+- train mot mo hinh giai quyet mot bai toan gi do.
+- deploy mo hinh nhu 1 service de ben ngoai call nhan ket qua.
+- khong can giao dien, chi can Rest API.
+- lam tai lieu (doc) mo ta model.
+- datasets co the lay tu Kaggle.
+- Projects:
++ Project 1 => Triển khai mô hình để sử dụng (Backend vì No UI, Language: Python): Xây RestAPI sử dụng model+ mình đã phát triển (FastAPI, FlaskAPI, Streamlit)
+(Gợi ý: Tham khảo Building Data Science Applications with FastAPI)
+Input: sample
+Output: JSON Data
++ Project 2 => Tình huống sử dụng (Frontend hay Application with UI): Nghĩ ra 1 ứng dụng demo sử dụng API do mình phát triển có hỗ trợ tương tác người dùng) 
+Gợi ý: Sử dụng Streamlit (Python), sử dụng React, Angular (Javascript), sử dụng Spring AI (Java), ... viết đơn giản giống các ví dụ demo trên Space của Hugging Face 
++ Project 3: Jupiter Notebook => Xây dựng mô hình
+(Các notebook hỗ trợ xây dựng mô hình) Gợi ý: Tham khảo cấu trúc 1 dự án học máy.
+- luu lai nhung thu nghiem (ghi nhat ky file excel, vd dung mo hinh nao, cau hinh, ket qua,...)

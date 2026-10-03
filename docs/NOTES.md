@@ -155,10 +155,69 @@ scale_pos_weight = count(negative) / count(positive)
 
 ### Logistic Regression (Baseline)
 
-- Mô hình tuyến tính: $P(y=1|X) = \sigma(w^T X + b)$, với $\sigma$ là sigmoid function.
-- Ưu điểm: nhanh, giải thích được (coefficients cho biết feature nào tác động tích cực/tiêu cực).
-- Hạn chế: giả định quan hệ tuyến tính giữa features và log-odds.
-- `max_iter=1000`: tăng số vòng lặp tối ưu để đảm bảo hội tụ.
+Mô hình phân loại tuyến tính thuộc họ **Generalized Linear Models (GLM)**, mô hình hóa xác suất hậu nghiệm $P(Y=1|X)$ thông qua hàm liên kết Logit.
+
+#### 1. Tại sao không dùng Linear Regression cho phân loại nhị phân?
+* **Vi phạm miền xác suất:** Linear Regression $y = w^T x + b$ có miền giá trị $(-\infty, +\infty)$, có thể sinh ra xác suất âm hoặc vượt quá $1$, vô nghĩa trong lý thuyết xác suất.
+* **Vi phạm giả định phương sai đồng nhất (Heteroscedasticity):** Biến ngẫu nhiên nhị phân $y \in \{0, 1\}$ tuân theo phân phối Bernoulli với phương sai $\text{Var}(y|x) = p(1-p)$. Phương sai phụ thuộc trực tiếp vào giá trị kỳ vọng $p$, vi phạm giả định phương sai không đổi ($\text{Var}(\epsilon) = \sigma^2$) của phương pháp OLS (Ordinary Least Squares).
+* **Độ nhạy lệch tâm do ngoại lai (Outlier Sensitivity):** Đường hồi quy tuyến tính bị kéo lệch nghiêm trọng bởi các điểm dữ liệu nằm rất xa ranh giới quyết định, làm dịch chuyển ngưỡng phân loại dù điểm đó đã được phân loại đúng với độ tin cậy cao.
+
+#### 2. Cơ chế ánh xạ toán học: Odds, Log-Odds (Logit) và Sigmoid Function
+* **Tỷ số chênh (Odds):** Tỷ lệ giữa xác suất biến cố xảy ra ($p$) và không xảy ra ($1 - p$):
+  $$\text{Odds} = \frac{p}{1 - p} \in (0, +\infty)$$
+* **Hàm Logit (Log-Odds):** Biến đổi thang đo Odds $(0, +\infty)$ về miền số thực $(-\infty, +\infty)$:
+  $$\text{logit}(p) = \ln\left(\frac{p}{1 - p}\right) = z \in (-\infty, +\infty)$$
+* **Mô hình hóa tuyến tính:** Thiết lập quan hệ tuyến tính giữa log-odds và các đặc trưng đầu vào:
+  $$\ln\left(\frac{p}{1 - p}\right) = w^T x + b = z$$
+* **Hàm Sigmoid (Logistic Function - Ánh xạ ngược của Logit):** Giải phương trình trên để tìm xác suất $p = P(y=1|x)$:
+  $$\frac{p}{1 - p} = e^z \implies p = \frac{e^z}{1 + e^z} = \sigma(z) = \frac{1}{1 + e^{-z}} = \frac{1}{1 + e^{-(w^T x + b)}}$$
+* **Tính chất đạo hàm của Sigmoid:** Cực kỳ quan trọng trong tối ưu hóa vi tích phân:
+  $$\sigma'(z) = \frac{e^{-z}}{(1 + e^{-z})^2} = \left(\frac{1}{1 + e^{-z}}\right) \left(1 - \frac{1}{1 + e^{-z}}\right) = \sigma(z)(1 - \sigma(z)) = p(1 - p)$$
+
+#### 3. Ranh giới quyết định (Decision Boundary)
+* Với ngưỡng quyết định chuẩn (Decision Threshold) $\tau = 0.5$:
+  $$\hat{y} = 1 \iff P(y=1|x) \ge 0.5 \iff \sigma(w^T x + b) \ge 0.5 \iff w^T x + b \ge 0$$
+* Do đó, ranh giới phân tách giữa hai lớp là một **siêu phẳng tuyến tính (Linear Hyperplane)**:
+  $$w^T x + b = 0$$
+* Logistic Regression là một **Linear Classifier** — phân vùng không gian đặc trưng bằng một siêu phẳng phẳng, không thể tự phân tách các mẫu có quan hệ phi tuyến tính phức tạp nếu không có phép biến đổi đặc trưng (feature engineering / kernel).
+
+#### 4. Hàm mất mát: Maximum Likelihood Estimation & Binary Cross-Entropy
+* Với nhãn nhị phân $y_i \in \{0, 1\}$, phân phối xác suất có dạng Bernoulli:
+  $$P(y_i|x_i; w) = p_i^{y_i} (1 - p_i)^{1 - y_i}$$
+* Giả định các mẫu độc lập cùng phân phối (i.i.d), hàm hợp lý (Likelihood Function):
+  $$L(w) = \prod_{i=1}^{N} p_i^{y_i} (1 - p_i)^{1 - y_i}$$
+* Log-Likelihood (để chuyển tích thành tổng, tránh tràn số thực dưới - underflow):
+  $$\ell(w) = \ln L(w) = \sum_{i=1}^{N} \left[ y_i \ln(p_i) + (1 - y_i) \ln(1 - p_i) \right]$$
+* **Hàm mất mát Binary Cross-Entropy (Log Loss):** Tối đa hóa Likelihood (MLE) tương đương tối thiểu hóa hàm mất mát âm Log-Likelihood:
+  $$J(w) = -\frac{1}{N} \ell(w) = -\frac{1}{N} \sum_{i=1}^{N} \left[ y_i \ln(\hat{y}_i) + (1 - y_i) \ln(1 - \hat{y}_i) \right]$$
+  *(với $\hat{y}_i = \sigma(w^T x_i + b)$).*
+* **Tại sao không dùng Mean Squared Error (MSE)?**
+  Nếu thay hàm Sigmoid vào MSE: $J_{\text{MSE}}(w) = \frac{1}{2N}\sum (y_i - \sigma(w^T x_i + b))^2$, hàm mất mát trở thành **phi lồi (non-convex)**, chứa nhiều điểm yên ngựa (saddle points) và cực tiểu địa phương (local minima). Ngược lại, Binary Cross-Entropy kết hợp cùng hàm kích hoạt Sigmoid tạo ra một hàm mất mát **lồi ngặt (strictly convex)**, đảm bảo nghiệm tìm được là nghiệm tối ưu toàn cục (global minimum).
+
+#### 5. Thuật toán tối ưu hóa (Optimization) & Đạo hàm
+* **Gradient bậc 1 (Đạo hàm riêng theo trọng số $w_j$):**
+  $$\frac{\partial J(w)}{\partial w_j} = \frac{1}{N} \sum_{i=1}^{N} (\hat{y}_i - y_i) x_{ij}$$
+  Dạng đạo hàm có hình thức đồng nhất với Linear Regression: **(Lỗi dự đoán) $\times$ (Giá trị đặc trưng)**.
+* **Ma trận Hessian bậc 2 (Đạo hàm cấp 2):**
+  $$H = \frac{\partial^2 J(w)}{\partial w \partial w^T} = \frac{1}{N} X^T D X$$
+  với $D = \text{diag}(p_1(1-p_1), p_2(1-p_2), \dots, p_N(1-p_N))$. Vì $0 < p_i < 1$, ma trận $D$ luôn xác định dương $\implies H$ luôn bán xác định dương ($X^T D X \succeq 0$), chứng minh toán học tính lồi toàn cục của hàm mục tiêu.
+* **Thuật toán giải (Solvers):**
+  * Trong `scikit-learn`, solver mặc định là **L-BFGS** (Limited-memory Broyden–Fletcher–Goldfarb–Shanno): phương pháp Quasi-Newton xấp xỉ ma trận nghịch đảo Hessian bậc hai mà không cần lưu toàn bộ ma trận $N \times N$ trong bộ nhớ.
+  * Tham số `max_iter=1000` được cấu hình để cho phép thuật toán bậc hai này đủ số bước lặp hội tụ tuyệt đối khi số lượng đặc trưng sau One-Hot Encoding tăng lên $D = 46$.
+
+#### 6. Ý nghĩa giải thích hệ số (Interpretability & Odds Ratio)
+* Từ phương trình $\ln(\text{Odds}) = w_0 + w_1 x_1 + \dots + w_k x_k$:
+  $$\text{Odds} = e^{w_0} \cdot e^{w_1 x_1} \dots e^{w_k x_k}$$
+* Khi đặc trưng $x_k$ tăng thêm $1$ đơn vị (các biến khác giữ nguyên):
+  $$\frac{\text{Odds}_{\text{new}}}{\text{Odds}_{\text{old}}} = e^{w_k} = \text{Odds Ratio (OR)}$$
+  * $w_k > 0 \implies e^{w_k} > 1$: đặc trưng làm tăng nguy cơ rời bỏ (Churn).
+  * $w_k < 0 \implies e^{w_k} < 1$: đặc trưng có tác dụng bảo vệ, giữ chân khách hàng (Retain).
+  * $w_k \approx 0 \implies e^{w_k} \approx 1$: đặc trưng không có ảnh hưởng đáng kể.
+
+#### 7. Hiệu chỉnh chống Overfitting (Regularization)
+* Để kiểm soát hiện tượng đa cộng tuyến (multicollinearity) và bùng nổ trọng số khi các biến One-Hot tương quan:
+  $$J_{\text{reg}}(w) = J(w) + \frac{1}{2C} \|w\|_2^2 \quad (\text{L2 - Ridge, mặc định})$$
+* Hệ số $C$ là nghịch đảo của cường độ phạt ($C = \frac{1}{\lambda}$). $C$ càng nhỏ, mô hình càng bị phạt nặng, hạn chế overfitting nhưng có thể tăng bias.
 
 ### Random Forest
 

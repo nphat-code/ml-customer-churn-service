@@ -1,6 +1,10 @@
+import sys
 import json
 import os
 import joblib
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from lightgbm import LGBMClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
@@ -103,6 +107,10 @@ def train_and_evaluate():
             indent=2,
             ensure_ascii=False,
         )
+
+    print(f"Optimal Model: {best_candidate_name}")
+    print(f"Saved pipeline to: {model_save_path}")
+    print(f"Saved benchmark to: {benchmark_file}")
 
     return best_candidate_name, results_sorted
 

@@ -16,3 +16,8 @@ Gợi ý: Sử dụng Streamlit (Python), sử dụng React, Angular (Javascript
 + Project 3: Jupiter Notebook => Xây dựng mô hình
 (Các notebook hỗ trợ xây dựng mô hình) Gợi ý: Tham khảo cấu trúc 1 dự án học máy.
 - luu lai nhung thu nghiem (ghi nhat ky file excel, vd dung mo hinh nao, cau hinh, ket qua,...)
+-----------------------------------------------------------------------------------------------
+Seminar
+- doc sach
+- chia se nhung gi hay
+

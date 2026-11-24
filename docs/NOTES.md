@@ -43,40 +43,26 @@ data["TotalCharges"] = data["TotalCharges"].fillna(0.0)
 
 ### StandardScaler
 
+**StandardScaler** là kỹ thuật chuẩn hóa biến số về **phân phối chuẩn hóa (Z-score)** sao cho sau khi biến đổi, mỗi cột đều có **trung bình ($\mu$) = 0** và **độ lệch chuẩn ($\sigma$) = 1**.
+
+#### 1. Công thức toán học
+Với mỗi giá trị $x$ trong cột, `StandardScaler` tính:
+
 $$z = \frac{x - \mu}{\sigma}$$
 
-#### 1. Bản chất toán học của $\mu$ và $\sigma$
-* **Kỳ vọng / Trung bình mẫu ($\mu$ — đọc là *muy*):** Xác định trọng tâm của phân phối dữ liệu:
-  $$\mu = \frac{1}{N} \sum_{i=1}^{N} x_i$$
-* **Độ lệch chuẩn ($\sigma$ — đọc là *xích-ma*, Standard Deviation):** Đo mức độ phân tán của dữ liệu quanh giá trị trung bình $\mu$:
-  $$\sigma = \sqrt{\frac{1}{N} \sum_{i=1}^{N} (x_i - \mu)^2}$$
-  *(Phần bên trong căn $\sigma^2$ là Phương sai - Variance; bình phương $(x_i - \mu)^2$ giúp triệt tiêu dấu âm và phạt nặng các điểm lệch xa tâm).*
-* **Lưu ý kỹ thuật:** `scikit-learn`'s `StandardScaler` tính $\sigma$ với bậc tự do `ddof=0` (chia cho $N$, tổng thể), khác với `pandas.Series.std()` mặc định `ddof=1` (chia cho $N-1$, hiệu chỉnh Bessel cho mẫu).
+- **$\mu$** (đọc là *muy*): giá trị trung bình (*mean*) của cột trên **tập train**.
+- **$\sigma$** (đọc là *xích-ma*): độ lệch chuẩn (*standard deviation*) của cột trên **tập train**.
 
-#### 2. Ý nghĩa cốt lõi của $\text{mean} = 0$ và $\text{std} = 1$
-*Lưu ý: $\text{mean} = 0$ và $\text{std} = 1$ là thuộc tính của tập giá trị mới $z$ **sau khi chuẩn hóa**, không phải của dữ liệu gốc.*
+#### 2. Tại sao cần dùng trong project này?
+Trong dữ liệu Telco Churn, 3 biến số có thang đo (*scale*) lệch nhau rất xa:
+- `tenure`: từ `0` đến `72` (tháng)
+- `MonthlyCharges`: khoảng `18` đến `118` (USD)
+- `TotalCharges`: từ `0` đến `8,684` (USD)
 
-* **Chứng minh toán học:**
-  * Kỳ vọng của biến chuẩn hóa $z$:
-    $$E[z] = E\left[\frac{X - \mu}{\sigma}\right] = \frac{E[X] - \mu}{\sigma} = \frac{\mu - \mu}{\sigma} = \mathbf{0}$$
-  * Phương sai của biến chuẩn hóa $z$:
-    $$\text{Var}(z) = \text{Var}\left(\frac{X - \mu}{\sigma}\right) = \frac{1}{\sigma^2} \text{Var}(X - \mu) = \frac{\text{Var}(X)}{\sigma^2} = \frac{\sigma^2}{\sigma^2} = \mathbf{1} \implies \text{Std}(z) = 1$$
-* **$\text{mean} = 0$ (Dời tâm về gốc tọa độ):** Biến số `0` trở thành cột mốc quy chiếu trung bình (baseline). Điểm có $z = 0$ đại diện cho mức trung bình của toàn bộ dữ liệu; $z > 0$ là cao hơn trung bình, $z < 0$ là thấp hơn trung bình.
-* **$\text{std} = 1$ (Chuẩn hóa đơn vị đo):** Chia cho $\sigma$ giúp chuyển đổi mọi thang đo vật lý (tháng, USD) thành cùng một thước đo trừu tượng: **"khoảng cách lệch bao nhiêu lần $\sigma$"**. Điểm $z = +2$ nghĩa là cao hơn trung bình đúng $2\sigma$.
-* **Quy tắc thực nghiệm $3\sigma$ & Phát hiện ngoại lai (Outlier Detection):** Đối với dữ liệu gần phân phối chuẩn, $99.7\%$ giá trị sẽ rơi vào đoạn $[-3, +3]$. Một mẫu có $|z| > 3$ được xem là ngoại lai hiếm gặp (xác suất $< 0.3\%$).
-* Cần thiết cho các mô hình tuyến tính / gradient-based (Logistic Regression). Tree-based (XGBoost, RF) không bắt buộc nhưng dùng chung pipeline để đồng nhất kiến trúc benchmark.
-
-#### ❓ Tại sao không scale thì biến có giá trị lớn (như TotalCharges) làm dự đoán bị lệch?
-
-So sánh miền giá trị thực tế trong tập dữ liệu:
-* `tenure`: $0 \rightarrow 72$ (tháng)
-* `MonthlyCharges`: $18.25 \rightarrow 118.75$ (USD)
-* `TotalCharges`: $0 \rightarrow 8,684.80$ (USD) — **lớn hơn hàng trăm lần!**
-
-Nếu để nguyên không chuẩn hóa, 3 vấn đề nghiêm trọng sẽ xảy ra:
-1. **Lấn át tín hiệu (Scale Dominance):** Trong tổ hợp tuyến tính $z = w_1 x_1 + w_2 x_2 + \dots$, số hạng $w_{\text{total}} \cdot X_{\text{total}}$ (hàng nghìn) sẽ áp đảo hoàn toàn các biến nhỏ (như `tenure` hay biến nhị phân 0/1 từ One-Hot), khiến mô hình gần như bỏ qua tiếng nói của các đặc trưng khác.
-2. **Lệch bước nhảy Gradient (Ill-conditioned optimization):** Đạo hàm cập nhật trọng số tỉ lệ thuận với giá trị đầu vào ($\frac{\partial L}{\partial w} \propto x$). Biến quá lớn làm mặt phẳng mất mát (loss surface) bị kéo dẹt theo một chiều, gradient dao động dữ dội, mô hình học rất chậm, khó hội tụ hoặc rơi vào nghiệm cục bộ sai lệch.
-3. **Bị phạt bất công bởi Regularization (L1/L2):** Các hàm phạt L1/L2 phạt đều mọi trọng số $w$ theo cùng một hệ số $\lambda$. Vì $x_{\text{total}}$ quá lớn nên chỉ cần $w_{\text{total}}$ rất nhỏ là đủ ảnh hưởng; ngược lại các biến có scale nhỏ cần $w$ lớn hơn thì lại bị penalty triệt tiêu về gần 0 một cách bất công.
+Nếu không chuẩn hóa:
+- Các thuật toán dựa trên **trọng số tuyến tính / gradient** như **Logistic Regression** sẽ bị các cột có số lớn (`TotalCharges` hàng nghìn) lấn át cột số nhỏ (`tenure` vài chục), làm tối ưu chậm và trọng số lệch.
+- Sau khi qua `StandardScaler`, cả 3 cột đều nằm chung quanh mức `0` (đa phần trong khoảng `[-2, +2]`), giúp mô hình hội tụ nhanh và công bằng hơn.
+- Các mô hình dạng cây (Random Forest, XGBoost, LightGBM) không nhạy cảm với scale, nhưng vẫn dùng chung trong `ColumnTransformer` để đồng nhất pipeline cho cả 4 mô hình.
 
 ### OneHotEncoder
 

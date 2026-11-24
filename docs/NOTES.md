@@ -364,3 +364,24 @@ else:                    risk_level = "Low"
 | **Data Leakage** | Thông tin từ test set rò rỉ vào quá trình training → metrics ảo cao |
 | **Inference** | Quá trình dùng mô hình đã train để dự đoán trên dữ liệu mới |
 | **SHAP** | Phương pháp giải thích mô hình dựa trên Shapley values từ lý thuyết trò chơi |
+
+
+---
+
+## 10. Bản chất toán học & Trade-offs của Recall và ROC-AUC
+
+### Recall (Sensitivity / True Positive Rate - TPR)
+
+$$\text{Recall} = \text{TPR} = \frac{\text{TP}}{\text{TP} + \text{FN}}$$
+
+- **Bản chất:** Xác suất có điều kiện $P(\hat{y} = 1 \mid y = 1)$ — trong toàn bộ tập mẫu thực sự dương tính (Churn), mô hình phát hiện đúng được bao nhiêu phần trăm.
+- **Đánh đổi (Precision-Recall Trade-off):** Recall chỉ đánh giá tại **một ngưỡng quyết định cố định** $t$ (mặc định $t = 0.5$). Khi giảm $t$ để bắt thêm TP (giảm FN, tăng Recall), mô hình đồng thời chấp nhận nhiều FP hơn, làm Precision $= \frac{\text{TP}}{\text{TP} + \text{FP}}$ giảm. Trong bài toán Churn, chi phí bỏ sót FN lớn hơn nhiều so với chi phí FP nên ưu tiên tối ưu Recall.
+
+### ROC-AUC (Receiver Operating Characteristic - Area Under the Curve)
+
+- **Đường cong ROC:** Quỹ tích các cặp $(\text{FPR}(t), \text{TPR}(t))$ khi quét ngưỡng phân loại $t$ liên tục từ $1 \to 0$, trong đó:
+  $$\text{FPR} = \frac{\text{FP}}{\text{FP} + \text{TN}} = P(\hat{y} = 1 \mid y = 0)$$
+- **Bản chất xác suất của AUC (Mann-Whitney U statistic):**
+  $$\text{AUC} = \int_0^1 \text{TPR}(\text{FPR}^{-1}(u)) \, du = P\left(\hat{p}(x^+) > \hat{p}(x^-)\right)$$
+  Với $x^+$ là một mẫu Churn ngẫu nhiên và $x^-$ là một mẫu Retain ngẫu nhiên, AUC chính là **xác suất mô hình gán điểm rủi ro cho mẫu Churn cao hơn mẫu Retain**.
+- **Tính bất biến với phân phối lớp (Class-balance invariance):** Vì cả $\text{TPR}$ và $\text{FPR}$ đều chuẩn hóa trên từng lớp riêng biệt ($y=1$ và $y=0$), ROC-AUC **không bị biến dạng** bởi tỷ lệ mất cân bằng giữa 2 lớp, phản ánh năng lực xếp hạng (*ranking quality*) thuần túy của mô hình trên mọi ngưỡng.

@@ -46,9 +46,9 @@ data["TotalCharges"] = data["TotalCharges"].fillna(0.0)
 $$z = \frac{x - \mu}{\sigma}$$
 
 #### 1. Bản chất toán học của $\mu$ và $\sigma$
-* **Kỳ vọng / Trung bình mẫu ($\mu$):** Xác định trọng tâm của phân phối dữ liệu:
+* **Kỳ vọng / Trung bình mẫu ($\mu$ — đọc là *muy*):** Xác định trọng tâm của phân phối dữ liệu:
   $$\mu = \frac{1}{N} \sum_{i=1}^{N} x_i$$
-* **Độ lệch chuẩn ($\sigma$ - Standard Deviation):** Đo mức độ phân tán của dữ liệu quanh giá trị trung bình $\mu$:
+* **Độ lệch chuẩn ($\sigma$ — đọc là *xích-ma*, Standard Deviation):** Đo mức độ phân tán của dữ liệu quanh giá trị trung bình $\mu$:
   $$\sigma = \sqrt{\frac{1}{N} \sum_{i=1}^{N} (x_i - \mu)^2}$$
   *(Phần bên trong căn $\sigma^2$ là Phương sai - Variance; bình phương $(x_i - \mu)^2$ giúp triệt tiêu dấu âm và phạt nặng các điểm lệch xa tâm).*
 * **Lưu ý kỹ thuật:** `scikit-learn`'s `StandardScaler` tính $\sigma$ với bậc tự do `ddof=0` (chia cho $N$, tổng thể), khác với `pandas.Series.std()` mặc định `ddof=1` (chia cho $N-1$, hiệu chỉnh Bessel cho mẫu).

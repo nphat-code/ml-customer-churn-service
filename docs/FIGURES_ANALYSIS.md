@@ -70,3 +70,4 @@ Tài liệu này lưu trữ toàn bộ 5 biểu đồ được sinh ra từ [not
   - `cat__Contract_Month-to-month` chiếm tỷ trọng áp đảo (~**52.5%**), khẳng định hợp đồng theo tháng là tín hiệu rủi ro số 1.
   - Tiếp theo là `cat__InternetService_Fiber optic` (~**9.9%**), `cat__OnlineSecurity_No` (~**4.6%**), `cat__TechSupport_No` (~**3.7%**) và `cat__InternetService_DSL` (~**3.0%**).
   - Kết quả này khớp hoàn toàn với EDA và làm cơ sở cho các luật khuyến nghị can thiệp trong `app/service.py` (khuyến khích nâng cấp hợp đồng dài hạn và bổ sung dịch vụ bảo mật/hỗ trợ kỹ thuật).
+

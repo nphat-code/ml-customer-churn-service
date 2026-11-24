@@ -63,3 +63,4 @@ Tài liệu này tóm tắt 7 bước xây dựng một hệ thống ML chuẩn 
 - **Demo UI:** Xây dựng ứng dụng **Streamlit** kết nối trực tiếp tới `POST /api/v1/predict` để người dùng nhập liệu và xem kết quả trực quan.
 - **Đóng gói (Tùy chọn):** Sử dụng Docker / `docker-compose` để chạy đồng thời FastAPI backend và Streamlit frontend.
 - **Tài liệu chuyên sâu:** Duy trì các phân tích toán học và kiến trúc cốt lõi trong `docs/NOTES.md`, kịch bản thuyết trình trong `docs/PRESENTATION_NOTES.md`.
+

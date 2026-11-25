@@ -3,14 +3,27 @@ import { BarChart3, Layers, Radio, RefreshCw } from 'lucide-react'
 import { BatchDashboard } from './components/BatchDashboard'
 import { SinglePredictor } from './components/SinglePredictor'
 import { fetchHealth } from './services/api'
-import type { HealthResponse } from './types/churn'
+import type { ChurnPredictionResponse, CustomerInput, HealthResponse } from './types/churn'
 
 type ActiveTab = 'single' | 'batch'
+
+export interface BatchRow {
+  id: string
+  input: CustomerInput
+  result: ChurnPredictionResponse
+}
+
+export interface InspectedCustomer {
+  id: string
+  data: CustomerInput
+}
 
 export function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('single')
   const [health, setHealth] = useState<HealthResponse | null>(null)
   const [checkingHealth, setCheckingHealth] = useState(false)
+  const [batchRows, setBatchRows] = useState<BatchRow[]>([])
+  const [inspectedCustomer, setInspectedCustomer] = useState<InspectedCustomer | null>(null)
 
   async function checkApiHealth() {
     setCheckingHealth(true)
@@ -27,6 +40,11 @@ export function App() {
   useEffect(() => {
     void checkApiHealth()
   }, [])
+
+  function handleInspectFromBatch(row: BatchRow) {
+    setInspectedCustomer({ id: row.id, data: row.input })
+    setActiveTab('single')
+  }
 
   const isHealthy = health?.status === 'healthy' && health.model_loaded
 
@@ -53,10 +71,11 @@ export function App() {
               <button
                 type="button"
                 onClick={() => setActiveTab('single')}
-                className={`inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-xs font-medium transition-colors duration-150 ${activeTab === 'single'
+                className={`inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-xs font-medium transition-colors duration-150 ${
+                  activeTab === 'single'
                     ? 'bg-[#22252c] text-zinc-100 ring-1 ring-white/10'
                     : 'text-zinc-400 hover:text-zinc-200'
-                  }`}
+                }`}
               >
                 <Layers className="h-4 w-4" strokeWidth={1.5} />
                 Phân tích khách hàng
@@ -64,10 +83,11 @@ export function App() {
               <button
                 type="button"
                 onClick={() => setActiveTab('batch')}
-                className={`inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-xs font-medium transition-colors duration-150 ${activeTab === 'batch'
+                className={`inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-xs font-medium transition-colors duration-150 ${
+                  activeTab === 'batch'
                     ? 'bg-[#22252c] text-zinc-100 ring-1 ring-white/10'
                     : 'text-zinc-400 hover:text-zinc-200'
-                  }`}
+                }`}
               >
                 <BarChart3 className="h-4 w-4" strokeWidth={1.5} />
                 Phân tích hàng loạt (CSV)
@@ -80,8 +100,9 @@ export function App() {
               className="inline-flex items-center gap-2 rounded-lg border border-white/8 bg-[#131418] px-3 py-1.5 text-xs font-medium text-zinc-300 transition-colors duration-150 hover:border-white/15 hover:text-zinc-100"
             >
               <span
-                className={`h-2 w-2 rounded-full ${isHealthy ? 'bg-emerald-400' : 'bg-rose-400'
-                  }`}
+                className={`h-2 w-2 rounded-full ${
+                  isHealthy ? 'bg-emerald-400' : 'bg-rose-400'
+                }`}
               />
               <span>{isHealthy ? 'Hệ thống sẵn sàng' : 'Mất kết nối máy chủ'}</span>
               <RefreshCw
@@ -94,7 +115,18 @@ export function App() {
       </header>
 
       <main className="mx-auto max-w-[1440px] px-6 py-6">
-        {activeTab === 'single' ? <SinglePredictor /> : <BatchDashboard />}
+        {activeTab === 'single' ? (
+          <SinglePredictor
+            inspectedCustomer={inspectedCustomer}
+            onClearInspected={() => setInspectedCustomer(null)}
+          />
+        ) : (
+          <BatchDashboard
+            rows={batchRows}
+            onRowsChange={setBatchRows}
+            onInspectCustomer={handleInspectFromBatch}
+          />
+        )}
       </main>
     </div>
   )

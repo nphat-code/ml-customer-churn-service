@@ -1,14 +1,15 @@
 import { useState } from 'react'
-import { Database, FileSpreadsheet, Loader2, Upload } from 'lucide-react'
+import { ArrowUpRight, Database, Download, FileSpreadsheet, Loader2, Upload } from 'lucide-react'
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
+import type { BatchRow } from '../App'
 import { buildSampleBatchCustomers } from '../data/presets'
 import { predictBatchCustomers } from '../services/api'
-import type { ChurnPredictionResponse, CustomerInput } from '../types/churn'
+import type { CustomerInput } from '../types/churn'
 
-interface BatchRow {
-  id: string
-  input: CustomerInput
-  result: ChurnPredictionResponse
+interface BatchDashboardProps {
+  rows: BatchRow[]
+  onRowsChange: (rows: BatchRow[]) => void
+  onInspectCustomer: (row: BatchRow) => void
 }
 
 function parseCsvLine(line: string): string[] {
@@ -121,8 +122,21 @@ const CONTRACT_LABELS: Record<string, string> = {
   'Two year': '2 năm',
 }
 
-export function BatchDashboard() {
-  const [rows, setRows] = useState<BatchRow[]>([])
+const RISK_LABELS: Record<'High' | 'Medium' | 'Low', string> = {
+  High: 'Cao',
+  Medium: 'Trung bình',
+  Low: 'Thấp',
+}
+
+function escapeCsvCell(value: string): string {
+  return `"${value.replace(/"/g, '""')}"`
+}
+
+export function BatchDashboard({
+  rows,
+  onRowsChange,
+  onInspectCustomer,
+}: BatchDashboardProps) {
   const [riskFilter, setRiskFilter] = useState<'ALL' | 'High' | 'Medium' | 'Low'>('ALL')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -138,9 +152,9 @@ export function BatchDashboard() {
         result,
       }))
       merged.sort((a, b) => b.result.churn_probability - a.result.churn_probability)
-      setRows(merged)
+      onRowsChange(merged)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Lỗi khi gọi API dự đoán hàng loạt')
+      setError(err instanceof Error ? err.message : 'Không thể xử lý danh sách khách hàng')
     } finally {
       setLoading(false)
     }
@@ -168,10 +182,10 @@ export function BatchDashboard() {
   const highCount = rows.filter((r) => r.result.risk_level === 'High').length
   const mediumCount = rows.filter((r) => r.result.risk_level === 'Medium').length
   const lowCount = rows.filter((r) => r.result.risk_level === 'Low').length
-  const avgProb =
-    total > 0
-      ? rows.reduce((sum, r) => sum + r.result.churn_probability, 0) / total
-      : 0
+  const totalMonthlyRevenue = rows.reduce((sum, r) => sum + r.input.MonthlyCharges, 0)
+  const highRiskMonthlyRevenue = rows
+    .filter((r) => r.result.risk_level === 'High')
+    .reduce((sum, r) => sum + r.input.MonthlyCharges, 0)
 
   const pieData = [
     { name: 'Rủi ro cao', value: highCount, color: PIE_COLORS.High },
@@ -181,6 +195,40 @@ export function BatchDashboard() {
 
   const filteredRows =
     riskFilter === 'ALL' ? rows : rows.filter((r) => r.result.risk_level === riskFilter)
+
+  function handleExportCsv() {
+    if (filteredRows.length === 0) return
+    const header = [
+      'Mã KH',
+      'Loại hợp đồng',
+      'Số tháng gắn bó',
+      'Cước tháng ($)',
+      'Nguy cơ rời bỏ (%)',
+      'Mức độ rủi ro',
+      'Kế hoạch giữ chân đề xuất',
+    ].join(',')
+
+    const lines = filteredRows.map((row) =>
+      [
+        escapeCsvCell(row.id),
+        escapeCsvCell(CONTRACT_LABELS[row.input.Contract] ?? row.input.Contract),
+        String(row.input.tenure),
+        row.input.MonthlyCharges.toFixed(1),
+        (row.result.churn_probability * 100).toFixed(1),
+        escapeCsvCell(RISK_LABELS[row.result.risk_level]),
+        escapeCsvCell(row.result.recommendation),
+      ].join(','),
+    )
+
+    const csvContent = `\uFEFF${[header, ...lines].join('\n')}`
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'danh_sach_cham_soc_khach_hang.csv'
+    link.click()
+    URL.revokeObjectURL(url)
+  }
 
   return (
     <div className="space-y-6">
@@ -248,7 +296,7 @@ export function BatchDashboard() {
               </div>
             </div>
             <div className="rounded-2xl border border-white/8 bg-[#131418] p-4">
-              <div className="text-xs text-zinc-400">Dự đoán rời bỏ (Churn)</div>
+              <div className="text-xs text-zinc-400">Có nguy cơ rời bỏ</div>
               <div className="mt-1.5 text-2xl font-semibold text-rose-400 tabular-nums">
                 {churnCount}{' '}
                 <span className="text-xs font-normal text-zinc-400">
@@ -263,9 +311,12 @@ export function BatchDashboard() {
               </div>
             </div>
             <div className="rounded-2xl border border-white/8 bg-[#131418] p-4">
-              <div className="text-xs text-zinc-400">Xác suất trung bình</div>
+              <div className="text-xs text-zinc-400">Doanh thu tháng rủi ro cao</div>
               <div className="mt-1.5 text-2xl font-semibold text-sky-400 tabular-nums">
-                {(avgProb * 100).toFixed(1)}%
+                ${highRiskMonthlyRevenue.toFixed(0)}{' '}
+                <span className="text-xs font-normal text-zinc-400">
+                  / ${totalMonthlyRevenue.toFixed(0)}
+                </span>
               </div>
             </div>
           </div>
@@ -317,31 +368,47 @@ export function BatchDashboard() {
 
             <div className="rounded-2xl border border-white/8 bg-[#131418] p-5 lg:col-span-8">
               <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-                <h3 className="text-sm font-semibold text-zinc-100">
-                  Danh sách khách hàng (Sắp xếp theo rủi ro giảm dần)
-                </h3>
-                <div className="flex gap-1.5">
-                  {(
-                    [
-                      ['ALL', 'Tất cả'],
-                      ['High', 'Cao'],
-                      ['Medium', 'Trung bình'],
-                      ['Low', 'Thấp'],
-                    ] as const
-                  ).map(([tier, label]) => (
-                    <button
-                      key={tier}
-                      type="button"
-                      onClick={() => setRiskFilter(tier)}
-                      className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors duration-150 ${
-                        riskFilter === tier
-                          ? 'bg-zinc-100 text-zinc-950'
-                          : 'bg-[#1d2027] text-zinc-300 hover:bg-[#262a33]'
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  ))}
+                <div>
+                  <h3 className="text-sm font-semibold text-zinc-100">
+                    Danh sách khách hàng (Ưu tiên rủi ro giảm dần)
+                  </h3>
+                  <p className="mt-0.5 text-xs text-zinc-400">
+                    Nhấn vào một khách hàng để xem phân tích chi tiết và mô phỏng giữ chân
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex gap-1.5">
+                    {(
+                      [
+                        ['ALL', 'Tất cả'],
+                        ['High', 'Cao'],
+                        ['Medium', 'Trung bình'],
+                        ['Low', 'Thấp'],
+                      ] as const
+                    ).map(([tier, label]) => (
+                      <button
+                        key={tier}
+                        type="button"
+                        onClick={() => setRiskFilter(tier)}
+                        className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors duration-150 ${
+                          riskFilter === tier
+                            ? 'bg-zinc-100 text-zinc-950'
+                            : 'bg-[#1d2027] text-zinc-300 hover:bg-[#262a33]'
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleExportCsv}
+                    disabled={filteredRows.length === 0}
+                    className="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-[#0d0e11] px-2.5 py-1 text-xs font-medium text-zinc-200 transition-colors duration-150 hover:border-white/20 disabled:opacity-50"
+                  >
+                    <Download className="h-3.5 w-3.5 text-zinc-400" strokeWidth={1.5} />
+                    Xuất CSV
+                  </button>
                 </div>
               </div>
 
@@ -353,13 +420,18 @@ export function BatchDashboard() {
                       <th className="px-3 py-2.5 font-medium">Hợp đồng</th>
                       <th className="px-3 py-2.5 text-right font-medium">Tháng</th>
                       <th className="px-3 py-2.5 text-right font-medium">Cước/tháng</th>
-                      <th className="px-3 py-2.5 text-right font-medium">Xác suất</th>
+                      <th className="px-3 py-2.5 text-right font-medium">Nguy cơ</th>
                       <th className="px-3 py-2.5 font-medium">Mức độ</th>
+                      <th className="px-3 py-2.5 text-right font-medium">Chi tiết</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/6 text-zinc-200">
                     {filteredRows.map((row) => (
-                      <tr key={row.id} className="transition-colors duration-150 hover:bg-white/[0.03]">
+                      <tr
+                        key={row.id}
+                        onClick={() => onInspectCustomer(row)}
+                        className="cursor-pointer transition-colors duration-150 hover:bg-white/[0.04]"
+                      >
                         <td className="px-3 py-2 font-mono text-zinc-300">{row.id}</td>
                         <td className="px-3 py-2">
                           {CONTRACT_LABELS[row.input.Contract] ?? row.input.Contract}
@@ -383,11 +455,12 @@ export function BatchDashboard() {
                                   : 'border-emerald-500/25 bg-emerald-500/10 text-emerald-300'
                             }`}
                           >
-                            {row.result.risk_level === 'High'
-                              ? 'Cao'
-                              : row.result.risk_level === 'Medium'
-                                ? 'Trung bình'
-                                : 'Thấp'}
+                            {RISK_LABELS[row.result.risk_level]}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2 text-right">
+                          <span className="inline-flex items-center gap-1 text-zinc-400">
+                            Xem <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.5} />
                           </span>
                         </td>
                       </tr>

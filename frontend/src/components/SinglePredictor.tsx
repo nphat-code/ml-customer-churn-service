@@ -9,6 +9,7 @@ import {
   SlidersHorizontal,
   UserCheck,
 } from 'lucide-react'
+import type { InspectedCustomer } from '../App'
 import { CUSTOMER_PRESETS } from '../data/presets'
 import { predictSingleCustomer } from '../services/api'
 import type {
@@ -35,7 +36,15 @@ const RISK_LABELS = {
   Low: 'Rủi ro thấp',
 }
 
-export function SinglePredictor() {
+interface SinglePredictorProps {
+  inspectedCustomer?: InspectedCustomer | null
+  onClearInspected?: () => void
+}
+
+export function SinglePredictor({
+  inspectedCustomer = null,
+  onClearInspected,
+}: SinglePredictorProps) {
   const [customer, setCustomer] = useState<CustomerInput>(DEFAULT_CUSTOMER)
   const [activePresetId, setActivePresetId] = useState<string>(CUSTOMER_PRESETS[0].id)
   const [prediction, setPrediction] = useState<ChurnPredictionResponse | null>(null)
@@ -62,18 +71,26 @@ export function SinglePredictor() {
   }
 
   useEffect(() => {
+    if (inspectedCustomer) {
+      setActivePresetId('')
+      setCustomer(inspectedCustomer.data)
+      void runPrediction(inspectedCustomer.data)
+      return
+    }
     void runPrediction(DEFAULT_CUSTOMER)
-  }, [])
+  }, [inspectedCustomer])
 
   function handlePresetClick(presetId: string) {
     const found = CUSTOMER_PRESETS.find((item) => item.id === presetId)
     if (!found) return
+    onClearInspected?.()
     setActivePresetId(found.id)
     setCustomer(found.data)
     void runPrediction(found.data)
   }
 
   function updateField<K extends keyof CustomerInput>(key: K, value: CustomerInput[K]) {
+    onClearInspected?.()
     setActivePresetId('')
     setCustomer((prev) => {
       const next = { ...prev, [key]: value }
@@ -140,12 +157,17 @@ export function SinglePredictor() {
   return (
     <div className="space-y-6">
       <div className="rounded-2xl border border-white/8 bg-[#131418] p-5">
-        <div className="mb-3 flex items-center justify-between gap-2">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <UserCheck className="h-4 w-4 text-zinc-400" strokeWidth={1.5} />
             <span className="text-sm font-semibold text-zinc-100">
               Hồ sơ khách hàng mẫu
             </span>
+            {inspectedCustomer && (
+              <span className="rounded-md border border-sky-400/30 bg-sky-500/10 px-2 py-0.5 font-mono text-xs text-sky-300">
+                Đang xem: {inspectedCustomer.id}
+              </span>
+            )}
           </div>
           <span className="text-xs text-zinc-400">Chọn nhanh để kiểm thử</span>
         </div>

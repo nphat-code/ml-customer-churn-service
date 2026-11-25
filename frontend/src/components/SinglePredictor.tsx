@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import {
   Activity,
+  ArrowLeft,
   ArrowRight,
   CheckCircle2,
   Loader2,
@@ -39,11 +40,13 @@ const RISK_LABELS = {
 interface SinglePredictorProps {
   inspectedCustomer?: InspectedCustomer | null
   onClearInspected?: () => void
+  onBackToBatch?: () => void
 }
 
 export function SinglePredictor({
   inspectedCustomer = null,
   onClearInspected,
+  onBackToBatch,
 }: SinglePredictorProps) {
   const [customer, setCustomer] = useState<CustomerInput>(DEFAULT_CUSTOMER)
   const [activePresetId, setActivePresetId] = useState<string>(CUSTOMER_PRESETS[0].id)
@@ -164,9 +167,21 @@ export function SinglePredictor({
               Hồ sơ khách hàng mẫu
             </span>
             {inspectedCustomer && (
-              <span className="rounded-md border border-sky-400/30 bg-sky-500/10 px-2 py-0.5 font-mono text-xs text-sky-300">
-                Đang xem: {inspectedCustomer.id}
-              </span>
+              <>
+                <span className="rounded-md border border-sky-400/30 bg-sky-500/10 px-2 py-0.5 font-mono text-xs text-sky-300">
+                  Đang xem: {inspectedCustomer.id}
+                </span>
+                {onBackToBatch && (
+                  <button
+                    type="button"
+                    onClick={onBackToBatch}
+                    className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-[#0d0e11] px-2.5 py-0.5 text-xs font-medium text-zinc-300 transition-colors duration-150 hover:border-white/20 hover:text-zinc-100"
+                  >
+                    <ArrowLeft className="h-3.5 w-3.5" strokeWidth={1.5} />
+                    Quay lại danh sách
+                  </button>
+                )}
+              </>
             )}
           </div>
           <span className="text-xs text-zinc-400">Chọn nhanh để kiểm thử</span>

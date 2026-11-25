@@ -119,6 +119,7 @@ export function App() {
           <SinglePredictor
             inspectedCustomer={inspectedCustomer}
             onClearInspected={() => setInspectedCustomer(null)}
+            onBackToBatch={() => setActiveTab('batch')}
           />
         ) : (
           <BatchDashboard

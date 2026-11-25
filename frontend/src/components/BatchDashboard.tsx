@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { ArrowUpRight, Database, Download, FileSpreadsheet, Loader2, Upload } from 'lucide-react'
+import { ArrowUpRight, Database, Download, FileSpreadsheet, Loader2, Search, Upload } from 'lucide-react'
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 import type { BatchRow } from '../App'
-import { buildSampleBatchCustomers } from '../data/presets'
+import { buildSampleBatchCustomers, CUSTOMER_PRESETS } from '../data/presets'
 import { predictBatchCustomers } from '../services/api'
 import type { CustomerInput } from '../types/churn'
 
@@ -138,6 +138,7 @@ export function BatchDashboard({
   onInspectCustomer,
 }: BatchDashboardProps) {
   const [riskFilter, setRiskFilter] = useState<'ALL' | 'High' | 'Medium' | 'Low'>('ALL')
+  const [searchQuery, setSearchQuery] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -193,8 +194,71 @@ export function BatchDashboard({
     { name: 'Rủi ro thấp', value: lowCount, color: PIE_COLORS.Low },
   ].filter((d) => d.value > 0)
 
-  const filteredRows =
-    riskFilter === 'ALL' ? rows : rows.filter((r) => r.result.risk_level === riskFilter)
+  const normalizedQuery = searchQuery.trim().toLowerCase()
+  const filteredRows = rows.filter((row) => {
+    const matchesTier = riskFilter === 'ALL' || row.result.risk_level === riskFilter
+    const matchesQuery = !normalizedQuery || row.id.toLowerCase().includes(normalizedQuery)
+    return matchesTier && matchesQuery
+  })
+
+  function handleDownloadTemplateCsv() {
+    const columns = [
+      'customerID',
+      'gender',
+      'SeniorCitizen',
+      'Partner',
+      'Dependents',
+      'tenure',
+      'PhoneService',
+      'MultipleLines',
+      'InternetService',
+      'OnlineSecurity',
+      'OnlineBackup',
+      'DeviceProtection',
+      'TechSupport',
+      'StreamingTV',
+      'StreamingMovies',
+      'Contract',
+      'PaperlessBilling',
+      'PaymentMethod',
+      'MonthlyCharges',
+      'TotalCharges',
+    ]
+    const sampleLines = CUSTOMER_PRESETS.map((preset, idx) => {
+      const d = preset.data
+      return [
+        `SAMPLE-${String(idx + 1).padStart(3, '0')}`,
+        d.gender,
+        String(d.SeniorCitizen),
+        d.Partner,
+        d.Dependents,
+        String(d.tenure),
+        d.PhoneService,
+        d.MultipleLines,
+        d.InternetService,
+        d.OnlineSecurity,
+        d.OnlineBackup,
+        d.DeviceProtection,
+        d.TechSupport,
+        d.StreamingTV,
+        d.StreamingMovies,
+        d.Contract,
+        d.PaperlessBilling,
+        d.PaymentMethod,
+        String(d.MonthlyCharges),
+        String(d.TotalCharges),
+      ].join(',')
+    })
+    const blob = new Blob([[columns.join(','), ...sampleLines].join('\n')], {
+      type: 'text/csv;charset=utf-8;',
+    })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'mau_danh_sach_khach_hang.csv'
+    link.click()
+    URL.revokeObjectURL(url)
+  }
 
   function handleExportCsv() {
     if (filteredRows.length === 0) return
@@ -267,6 +331,15 @@ export function BatchDashboard({
               onChange={(e) => void handleFileUpload(e.target.files?.[0])}
             />
           </label>
+
+          <button
+            type="button"
+            onClick={handleDownloadTemplateCsv}
+            className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-[#0d0e11] px-3 py-2 text-xs font-medium text-zinc-300 transition-colors duration-150 hover:border-white/20 hover:text-zinc-100"
+          >
+            <Download className="h-3.5 w-3.5 text-zinc-400" strokeWidth={1.5} />
+            File CSV mẫu
+          </button>
         </div>
       </div>
 
@@ -377,6 +450,19 @@ export function BatchDashboard({
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
+                  <div className="relative">
+                    <Search
+                      className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-500"
+                      strokeWidth={1.5}
+                    />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Tìm mã KH..."
+                      className="w-32 rounded-md border border-white/10 bg-[#0d0e11] py-1 pl-8 pr-2.5 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-sky-400 focus:outline-none"
+                    />
+                  </div>
                   <div className="flex gap-1.5">
                     {(
                       [

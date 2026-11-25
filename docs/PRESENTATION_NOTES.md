@@ -91,14 +91,26 @@
 
 ---
 
-## Slide 6: Kiểm thử tự động & Chất lượng phần mềm
+## Slide 6: Kiểm thử tự động, CI/CD & Đóng gói Production
 
 * **Bộ kiểm thử tự động (`tests/test_api.py`):**
-  * Kiểm thử hợp đồng API (Schema Contract Testing).
-  * Kiểm tra phản hồi mã lỗi `422 Unprocessable Entity` khi dữ liệu đầu vào sai định dạng.
+  * Kiểm thử hợp đồng API (Schema Contract Testing) và mã lỗi `422 Unprocessable Entity` khi dữ liệu sai định dạng.
   * Kiểm tra tính sẵn sàng `GET /health` (`model_loaded: true`).
-  * Kiểm thử luồng dự đoán thực tế `POST /api/v1/predict` (kết quả trả về đầy đủ nhãn, xác suất, rủi ro, khuyến nghị).
-* **Kết quả:** Vượt qua **100% test cases (4/4 passed)** qua `pytest`.
+  * Kiểm thử dự đoán đơn `POST /api/v1/predict` (bao gồm giải thích TreeSHAP `top_factors` và trường hợp biên `tenure = 0`, không dùng Internet/Thoại).
+  * Kiểm thử dự đoán hàng loạt `POST /api/v1/predict/batch`.
+* **Kết quả & Vận hành:** Vượt qua **100% test cases (6/6 passed)** qua `pytest`, tự động kiểm tra qua **GitHub Actions CI** (`.github/workflows/ci.yml`), và đóng gói chạy đồng thời bằng **Docker Compose** (FastAPI + Nginx).
+
+---
+
+## Slide 7: Ứng dụng Demo Hướng Người Dùng Cuối (`ChurnGuard` - Project 2)
+
+* **Nguyên tắc thiết kế (End-User First UI):**
+  * Giao diện phục vụ trực tiếp nhân viên CSKH và quản lý kinh doanh bằng 100% ngôn ngữ nghiệp vụ tiếng Việt tự nhiên.
+  * Toàn bộ chi tiết kỹ thuật thô (tên thuật toán, đường dẫn API, log-odds SHAP) được ẩn khỏi màn hình làm việc và lưu trữ trong `notebooks/` cùng `docs/`.
+* **Kịch bản Demo trực tiếp (3 phút):**
+  1. **Hồ sơ mẫu 1-Click:** Chọn nhanh chân dung khách hàng mới rủi ro cao → xem đồng hồ đo nguy cơ, kế hoạch giữ chân đề xuất và biểu đồ các yếu tố ảnh hưởng chính.
+  2. **Mô phỏng kịch bản giữ chân:** Thử chuyển hợp đồng từ *Theo tháng* sang *1 năm* và tặng *Hỗ trợ kỹ thuật* → quan sát xác suất rời bỏ giảm ngay theo thời gian thực.
+  3. **Phân tích hàng loạt (CSV) & Doanh thu rủi ro:** Chạy thử 16 khách hàng mẫu → xem tổng doanh thu tháng có nguy cơ thất thoát, lọc nhóm *Rủi ro cao*, bấm vào 1 khách hàng để xem chi tiết, và xuất file CSV danh sách ưu tiên cho CSKH.
 
 ---
 

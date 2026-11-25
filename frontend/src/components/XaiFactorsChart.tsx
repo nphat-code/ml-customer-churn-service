@@ -1,4 +1,4 @@
-import { ArrowDownRight, ArrowUpRight, Sparkles } from 'lucide-react'
+import { ArrowDownRight, ArrowUpRight, BarChart2 } from 'lucide-react'
 import type { FeatureContribution } from '../types/churn'
 
 interface XaiFactorsChartProps {
@@ -30,8 +30,8 @@ const FEATURE_LABELS: Record<string, string> = {
 export function XaiFactorsChart({ factors }: XaiFactorsChartProps) {
   if (!factors || factors.length === 0) {
     return (
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 text-sm text-slate-400">
-        Chưa có dữ liệu giải thích SHAP cho dự đoán này.
+      <div className="rounded-2xl border border-white/8 bg-[#131418] p-5 text-sm text-zinc-400">
+        Chưa có dữ liệu giải thích SHAP cho dự đoán này
       </div>
     )
   }
@@ -39,15 +39,17 @@ export function XaiFactorsChart({ factors }: XaiFactorsChartProps) {
   const maxImpact = Math.max(...factors.map((f) => Math.abs(f.impact)), 0.1)
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
+    <div className="rounded-2xl border border-white/8 bg-[#131418] p-5">
       <div className="mb-4 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-indigo-400" />
-          <h3 className="text-sm font-semibold text-white">
-            Giải thích AI (SHAP Feature Impact)
+          <BarChart2 className="h-4 w-4 text-zinc-400" strokeWidth={1.5} />
+          <h3 className="text-sm font-semibold text-zinc-100">
+            Giải thích SHAP (Feature impact)
           </h3>
         </div>
-        <span className="text-xs text-slate-400">Top {factors.length} yếu tố ảnh hưởng</span>
+        <span className="font-mono text-xs text-zinc-400 tabular-nums">
+          Top {factors.length}
+        </span>
       </div>
 
       <div className="space-y-3">
@@ -58,30 +60,30 @@ export function XaiFactorsChart({ factors }: XaiFactorsChartProps) {
 
           return (
             <div key={factor.feature} className="space-y-1.5">
-              <div className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1.5 truncate">
+              <div className="flex items-center justify-between gap-2 text-xs">
+                <div className="flex min-w-0 items-center gap-2">
                   {isIncrease ? (
-                    <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-rose-400" />
+                    <ArrowUpRight className="h-4 w-4 shrink-0 text-rose-400" strokeWidth={1.5} />
                   ) : (
-                    <ArrowDownRight className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
+                    <ArrowDownRight className="h-4 w-4 shrink-0 text-emerald-400" strokeWidth={1.5} />
                   )}
-                  <span className="font-medium text-slate-200">{label}</span>
-                  <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[11px] text-slate-300">
+                  <span className="truncate font-medium text-zinc-200">{label}</span>
+                  <span className="shrink-0 rounded bg-[#1d2027] px-1.5 py-0.5 font-mono text-[11px] text-zinc-300">
                     {factor.value}
                   </span>
                 </div>
                 <span
-                  className={`font-mono font-semibold ${
+                  className={`shrink-0 font-mono font-medium tabular-nums ${
                     isIncrease ? 'text-rose-400' : 'text-emerald-400'
                   }`}
                 >
                   {factor.impact > 0 ? `+${factor.impact.toFixed(3)}` : factor.impact.toFixed(3)}
                 </span>
               </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800">
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#1e2027]">
                 <div
-                  className={`h-full rounded-full transition-all duration-300 ${
-                    isIncrease ? 'bg-rose-500/85' : 'bg-emerald-500/85'
+                  className={`h-full rounded-full transition-[width] duration-300 ease-out ${
+                    isIncrease ? 'bg-rose-400/85' : 'bg-emerald-400/85'
                   }`}
                   style={{ width: `${widthPct}%` }}
                 />
@@ -91,15 +93,14 @@ export function XaiFactorsChart({ factors }: XaiFactorsChartProps) {
         })}
       </div>
 
-      <div className="mt-4 flex items-center justify-between border-t border-slate-800 pt-3 text-[11px] text-slate-400">
-        <span className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full bg-rose-500" /> Đẩy tăng nguy cơ Churn
+      <div className="mt-4 flex items-center justify-between border-t border-white/8 pt-3 text-xs text-zinc-400">
+        <span className="flex items-center gap-2">
+          <span className="h-2 w-2 rounded-full bg-rose-400" /> Tăng nguy cơ Churn
         </span>
-        <span className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full bg-emerald-500" /> Giúp giữ chân khách hàng
+        <span className="flex items-center gap-2">
+          <span className="h-2 w-2 rounded-full bg-emerald-400" /> Giữ chân khách hàng
         </span>
       </div>
     </div>
   )
 }
-

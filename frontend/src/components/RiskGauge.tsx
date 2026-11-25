@@ -6,78 +6,70 @@ interface RiskGaugeProps {
 
 const RISK_STYLES = {
   High: {
-    stroke: '#f43f5e',
-    badge: 'bg-rose-500/15 text-rose-300 border-rose-500/40',
-    glow: 'shadow-rose-500/10',
-    label: 'Rủi ro Cao',
+    stroke: '#fb7185',
+    badge: 'bg-rose-500/10 text-rose-300 border-rose-500/25',
+    label: 'Rủi ro cao',
   },
   Medium: {
-    stroke: '#f59e0b',
-    badge: 'bg-amber-500/15 text-amber-300 border-amber-500/40',
-    glow: 'shadow-amber-500/10',
-    label: 'Rủi ro Trung bình',
+    stroke: '#fbbf24',
+    badge: 'bg-amber-500/10 text-amber-300 border-amber-500/25',
+    label: 'Rủi ro trung bình',
   },
   Low: {
-    stroke: '#10b981',
-    badge: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40',
-    glow: 'shadow-emerald-500/10',
-    label: 'Rủi ro Thấp',
+    stroke: '#34d399',
+    badge: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/25',
+    label: 'Rủi ro thấp',
   },
 }
 
 export function RiskGauge({ probability, riskLevel, prediction }: RiskGaugeProps) {
   const clamped = Math.max(0, Math.min(1, probability))
-  const percent = Math.round(clamped * 1000) / 10
+  const percent = (clamped * 100).toFixed(1)
   const style = RISK_STYLES[riskLevel]
   const radius = 78
   const circumference = Math.PI * radius
   const dashOffset = circumference * (1 - clamped)
 
   return (
-    <div className={`flex flex-col items-center rounded-2xl border border-slate-800 bg-slate-900/70 p-5 shadow-lg ${style.glow}`}>
+    <div className="flex flex-col items-center rounded-2xl border border-white/8 bg-[#131418] p-6">
       <div className="relative flex w-full max-w-[220px] flex-col items-center">
         <svg viewBox="0 0 200 115" className="w-full overflow-visible">
           <path
             d="M 22 100 A 78 78 0 0 1 178 100"
             fill="none"
-            stroke="#1e293b"
-            strokeWidth="16"
+            stroke="#22252c"
+            strokeWidth="14"
             strokeLinecap="round"
           />
           <path
             d="M 22 100 A 78 78 0 0 1 178 100"
             fill="none"
             stroke={style.stroke}
-            strokeWidth="16"
+            strokeWidth="14"
             strokeLinecap="round"
             strokeDasharray={circumference}
             strokeDashoffset={dashOffset}
-            className="transition-all duration-500 ease-out"
+            className="transition-[stroke-dashoffset] duration-300 ease-out"
           />
         </svg>
         <div className="-mt-11 text-center">
-          <div className="text-3xl font-bold tracking-tight text-white">{percent}%</div>
-          <div className="text-xs font-medium uppercase tracking-wider text-slate-400">
+          <div className="text-3xl font-semibold tracking-tight text-zinc-100 tabular-nums">
+            {percent}%
+          </div>
+          <div className="mt-0.5 text-xs font-medium text-zinc-400">
             Xác suất rời bỏ
           </div>
         </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-        <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${style.badge}`}>
-          {style.label} ({riskLevel})
+      <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+        <span className={`rounded-md border px-2.5 py-1 text-xs font-medium ${style.badge}`}>
+          {style.label} · {riskLevel}
         </span>
-        <span
-          className={`rounded-full border px-3 py-1 text-xs font-semibold ${
-            prediction === 'Churn'
-              ? 'border-rose-500/30 bg-rose-950/60 text-rose-200'
-              : 'border-emerald-500/30 bg-emerald-950/60 text-emerald-200'
-          }`}
-        >
-          Dự đoán: {prediction === 'Churn' ? 'Rời bỏ (Churn)' : 'Ở lại (Retain)'}
+        <span className="rounded-md border border-white/8 bg-[#1a1c22] px-2.5 py-1 text-xs font-medium text-zinc-300">
+          {prediction === 'Churn' ? 'Dự đoán: Rời bỏ (Churn)' : 'Dự đoán: Ở lại (Retain)'}
         </span>
       </div>
     </div>
   )
 }
-

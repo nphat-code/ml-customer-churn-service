@@ -110,9 +110,9 @@ function parseTelcoCsv(text: string): { ids: string[]; customers: CustomerInput[
 }
 
 const PIE_COLORS = {
-  High: '#f43f5e',
-  Medium: '#f59e0b',
-  Low: '#10b981',
+  High: '#fb7185',
+  Medium: '#fbbf24',
+  Low: '#34d399',
 }
 
 export function BatchDashboard() {
@@ -178,14 +178,14 @@ export function BatchDashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/8 bg-[#131418] p-5">
         <div>
-          <h2 className="text-base font-semibold text-white">
-            Dự đoán Hàng loạt & Phân tích Tập khách hàng (CSV Batch)
+          <h2 className="text-base font-semibold text-zinc-100">
+            Dự đoán hàng loạt &amp; Phân tích tập khách hàng (CSV Batch)
           </h2>
-          <p className="mt-1 text-xs text-slate-400">
-            Tải lên file CSV chuẩn Telco Customer Churn (tối đa 200 dòng/lượt) hoặc dùng bộ dữ liệu mẫu để gọi API{' '}
-            <code className="rounded bg-slate-800 px-1.5 py-0.5 text-indigo-300">
+          <p className="mt-1 text-xs text-zinc-400">
+            Tải lên file CSV chuẩn Telco Customer Churn (tối đa 200 dòng/lượt) hoặc dùng bộ dữ liệu mẫu qua{' '}
+            <code className="rounded bg-[#1d2027] px-1.5 py-0.5 font-mono text-zinc-200">
               /api/v1/predict/batch
             </code>
           </p>
@@ -196,14 +196,18 @@ export function BatchDashboard() {
             type="button"
             onClick={handleSampleBatch}
             disabled={loading}
-            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-lg bg-zinc-100 px-4 py-2 text-xs font-semibold text-zinc-950 transition-colors duration-150 hover:bg-white disabled:opacity-60"
           >
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Database className="h-4 w-4" />}
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} />
+            ) : (
+              <Database className="h-4 w-4" strokeWidth={1.5} />
+            )}
             Chạy thử 16 khách hàng mẫu
           </button>
 
-          <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-slate-700 bg-slate-950 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-slate-500">
-            <Upload className="h-4 w-4 text-indigo-400" />
+          <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-white/10 bg-[#0d0e11] px-4 py-2 text-xs font-medium text-zinc-200 transition-colors duration-150 hover:border-white/20">
+            <Upload className="h-4 w-4 text-zinc-400" strokeWidth={1.5} />
             Tải file CSV
             <input
               type="file"
@@ -216,52 +220,56 @@ export function BatchDashboard() {
       </div>
 
       {error && (
-        <div className="rounded-2xl border border-rose-500/40 bg-rose-950/50 p-4 text-sm text-rose-200">
+        <div className="rounded-2xl border border-rose-500/30 bg-rose-950/30 p-4 text-sm text-rose-200">
           {error}
         </div>
       )}
 
       {rows.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-800 bg-slate-900/30 py-16 text-center">
-          <FileSpreadsheet className="h-10 w-10 text-slate-500" />
-          <p className="mt-3 text-sm font-medium text-slate-300">
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-[#131418]/60 py-16 text-center">
+          <FileSpreadsheet className="h-9 w-9 text-zinc-500" strokeWidth={1.5} />
+          <p className="mt-3 text-sm font-medium text-zinc-300">
             Chưa có dữ liệu batch nào được phân tích
           </p>
-          <p className="mt-1 text-xs text-slate-500">
-            Nhấn &ldquo;Chạy thử 16 khách hàng mẫu&rdquo; hoặc tải file CSV để xem biểu đồ phân bố rủi ro.
+          <p className="mt-1 text-xs text-zinc-500">
+            Nhấn &ldquo;Chạy thử 16 khách hàng mẫu&rdquo; hoặc tải file CSV để xem phân bố rủi ro
           </p>
         </div>
       ) : (
         <>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
-              <div className="text-xs text-slate-400">Tổng khách hàng</div>
-              <div className="mt-1 text-2xl font-bold text-white">{total}</div>
+            <div className="rounded-2xl border border-white/8 bg-[#131418] p-4">
+              <div className="text-xs text-zinc-400">Tổng khách hàng</div>
+              <div className="mt-1.5 text-2xl font-semibold text-zinc-100 tabular-nums">
+                {total}
+              </div>
             </div>
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
-              <div className="text-xs text-slate-400">Dự đoán Rời bỏ (Churn)</div>
-              <div className="mt-1 text-2xl font-bold text-rose-400">
+            <div className="rounded-2xl border border-white/8 bg-[#131418] p-4">
+              <div className="text-xs text-zinc-400">Dự đoán rời bỏ (Churn)</div>
+              <div className="mt-1.5 text-2xl font-semibold text-rose-400 tabular-nums">
                 {churnCount}{' '}
-                <span className="text-sm font-normal text-slate-400">
+                <span className="text-xs font-normal text-zinc-400">
                   ({Math.round((churnCount / total) * 100)}%)
                 </span>
               </div>
             </div>
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
-              <div className="text-xs text-slate-400">Nhóm Rủi ro Cao (High Risk)</div>
-              <div className="mt-1 text-2xl font-bold text-amber-400">{highCount}</div>
+            <div className="rounded-2xl border border-white/8 bg-[#131418] p-4">
+              <div className="text-xs text-zinc-400">Nhóm rủi ro cao</div>
+              <div className="mt-1.5 text-2xl font-semibold text-amber-400 tabular-nums">
+                {highCount}
+              </div>
             </div>
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
-              <div className="text-xs text-slate-400">Xác suất Churn trung bình</div>
-              <div className="mt-1 text-2xl font-bold text-indigo-300">
+            <div className="rounded-2xl border border-white/8 bg-[#131418] p-4">
+              <div className="text-xs text-zinc-400">Xác suất trung bình</div>
+              <div className="mt-1.5 text-2xl font-semibold text-sky-400 tabular-nums">
                 {(avgProb * 100).toFixed(1)}%
               </div>
             </div>
           </div>
 
           <div className="grid gap-6 lg:grid-cols-12">
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 lg:col-span-4">
-              <h3 className="mb-3 text-sm font-semibold text-white">Phân bố Tầng Rủi ro</h3>
+            <div className="rounded-2xl border border-white/8 bg-[#131418] p-5 lg:col-span-4">
+              <h3 className="mb-3 text-sm font-semibold text-zinc-100">Phân bố tầng rủi ro</h3>
               <div className="h-56 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -281,32 +289,33 @@ export function BatchDashboard() {
                     </Pie>
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: '#0f172a',
-                        borderColor: '#334155',
-                        borderRadius: '0.75rem',
-                        color: '#f8fafc',
+                        backgroundColor: '#131418',
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderRadius: '0.5rem',
+                        color: '#f4f4f5',
+                        fontSize: '12px',
                       }}
                     />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-              <div className="mt-2 flex justify-center gap-4 text-xs text-slate-300">
+              <div className="mt-2 flex justify-center gap-4 text-xs text-zinc-300 tabular-nums">
                 <span className="flex items-center gap-1.5">
-                  <span className="h-2.5 w-2.5 rounded-full bg-rose-500" /> High ({highCount})
+                  <span className="h-2 w-2 rounded-full bg-rose-400" /> High ({highCount})
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="h-2.5 w-2.5 rounded-full bg-amber-500" /> Medium ({mediumCount})
+                  <span className="h-2 w-2 rounded-full bg-amber-400" /> Medium ({mediumCount})
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" /> Low ({lowCount})
+                  <span className="h-2 w-2 rounded-full bg-emerald-400" /> Low ({lowCount})
                 </span>
               </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 lg:col-span-8">
+            <div className="rounded-2xl border border-white/8 bg-[#131418] p-5 lg:col-span-8">
               <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-                <h3 className="text-sm font-semibold text-white">
-                  Danh sách Khách hàng (Sắp xếp theo rủi ro giảm dần)
+                <h3 className="text-sm font-semibold text-zinc-100">
+                  Danh sách khách hàng (Sắp xếp theo rủi ro giảm dần)
                 </h3>
                 <div className="flex gap-1.5">
                   {(['ALL', 'High', 'Medium', 'Low'] as const).map((tier) => (
@@ -314,10 +323,10 @@ export function BatchDashboard() {
                       key={tier}
                       type="button"
                       onClick={() => setRiskFilter(tier)}
-                      className={`rounded-lg px-2.5 py-1 text-xs font-medium transition ${
+                      className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors duration-150 ${
                         riskFilter === tier
-                          ? 'bg-indigo-600 text-white'
-                          : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                          ? 'bg-zinc-100 text-zinc-950'
+                          : 'bg-[#1d2027] text-zinc-300 hover:bg-[#262a33]'
                       }`}
                     >
                       {tier === 'ALL' ? 'Tất cả' : tier}
@@ -326,36 +335,40 @@ export function BatchDashboard() {
                 </div>
               </div>
 
-              <div className="max-h-80 overflow-auto rounded-xl border border-slate-800">
+              <div className="max-h-80 overflow-auto rounded-xl border border-white/8">
                 <table className="w-full text-left text-xs">
-                  <thead className="sticky top-0 bg-slate-950 text-slate-400">
+                  <thead className="sticky top-0 border-b border-white/8 bg-[#0d0e11] text-zinc-400">
                     <tr>
-                      <th className="px-3 py-2.5">Mã KH</th>
-                      <th className="px-3 py-2.5">Hợp đồng</th>
-                      <th className="px-3 py-2.5">Tháng</th>
-                      <th className="px-3 py-2.5">Cước/tháng</th>
-                      <th className="px-3 py-2.5">Xác suất</th>
-                      <th className="px-3 py-2.5">Mức độ</th>
+                      <th className="px-3 py-2.5 font-medium">Mã KH</th>
+                      <th className="px-3 py-2.5 font-medium">Hợp đồng</th>
+                      <th className="px-3 py-2.5 text-right font-medium">Tháng</th>
+                      <th className="px-3 py-2.5 text-right font-medium">Cước/tháng</th>
+                      <th className="px-3 py-2.5 text-right font-medium">Xác suất</th>
+                      <th className="px-3 py-2.5 font-medium">Mức độ</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/80 text-slate-200">
+                  <tbody className="divide-y divide-white/6 text-zinc-200">
                     {filteredRows.map((row) => (
-                      <tr key={row.id} className="hover:bg-slate-800/40">
-                        <td className="px-3 py-2 font-mono text-indigo-300">{row.id}</td>
+                      <tr key={row.id} className="transition-colors duration-150 hover:bg-white/[0.03]">
+                        <td className="px-3 py-2 font-mono text-zinc-300">{row.id}</td>
                         <td className="px-3 py-2">{row.input.Contract}</td>
-                        <td className="px-3 py-2">{row.input.tenure}</td>
-                        <td className="px-3 py-2">${row.input.MonthlyCharges.toFixed(1)}</td>
-                        <td className="px-3 py-2 font-semibold">
+                        <td className="px-3 py-2 text-right font-mono tabular-nums">
+                          {row.input.tenure}
+                        </td>
+                        <td className="px-3 py-2 text-right font-mono tabular-nums">
+                          ${row.input.MonthlyCharges.toFixed(1)}
+                        </td>
+                        <td className="px-3 py-2 text-right font-mono font-medium tabular-nums">
                           {(row.result.churn_probability * 100).toFixed(1)}%
                         </td>
                         <td className="px-3 py-2">
                           <span
-                            className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                            className={`inline-flex rounded-md border px-2 py-0.5 text-[11px] font-medium ${
                               row.result.risk_level === 'High'
-                                ? 'bg-rose-500/20 text-rose-300'
+                                ? 'border-rose-500/25 bg-rose-500/10 text-rose-300'
                                 : row.result.risk_level === 'Medium'
-                                  ? 'bg-amber-500/20 text-amber-300'
-                                  : 'bg-emerald-500/20 text-emerald-300'
+                                  ? 'border-amber-500/25 bg-amber-500/10 text-amber-300'
+                                  : 'border-emerald-500/25 bg-emerald-500/10 text-emerald-300'
                             }`}
                           >
                             {row.result.risk_level}
@@ -373,4 +386,3 @@ export function BatchDashboard() {
     </div>
   )
 }
-

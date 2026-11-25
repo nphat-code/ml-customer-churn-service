@@ -27,7 +27,7 @@ import { XaiFactorsChart } from './XaiFactorsChart'
 const DEFAULT_CUSTOMER = CUSTOMER_PRESETS[0].data
 
 const selectClass =
-  'w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500'
+  'w-full rounded-lg border border-white/10 bg-[#0d0e11] px-3 py-2 text-sm text-zinc-100 focus:border-sky-400 focus:outline-none focus:ring-1 focus:ring-sky-400'
 
 export function SinglePredictor() {
   const [customer, setCustomer] = useState<CustomerInput>(DEFAULT_CUSTOMER)
@@ -128,19 +128,20 @@ export function SinglePredictor() {
 
   const baseProb = prediction?.churn_probability ?? 0
   const simProb = simPrediction?.churn_probability ?? baseProb
-  const deltaPercent = Math.round((simProb - baseProb) * 1000) / 10
+  const deltaPercent = ((simProb - baseProb) * 100).toFixed(1)
+  const deltaNum = Number(deltaPercent)
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
-        <div className="mb-3 flex items-center justify-between">
+      <div className="rounded-2xl border border-white/8 bg-[#131418] p-5">
+        <div className="mb-3 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <UserCheck className="h-4 w-4 text-indigo-400" />
-            <span className="text-sm font-semibold text-white">
-              Hồ sơ mẫu 1-Click (Preset Profiles)
+            <UserCheck className="h-4 w-4 text-zinc-400" strokeWidth={1.5} />
+            <span className="text-sm font-semibold text-zinc-100">
+              Hồ sơ mẫu (Preset profiles)
             </span>
           </div>
-          <span className="text-xs text-slate-400">Chọn nhanh để kiểm thử tức thì</span>
+          <span className="text-xs text-zinc-400">Chọn nhanh để kiểm thử</span>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -151,27 +152,25 @@ export function SinglePredictor() {
                 key={preset.id}
                 type="button"
                 onClick={() => handlePresetClick(preset.id)}
-                className={`rounded-xl border p-3 text-left transition ${
+                className={`rounded-xl border p-3.5 text-left transition-colors duration-150 ${
                   isSelected
-                    ? 'border-indigo-500 bg-indigo-500/15 shadow-sm shadow-indigo-500/20'
-                    : 'border-slate-800 bg-slate-950/60 hover:border-slate-700 hover:bg-slate-900'
+                    ? 'border-sky-400/50 bg-[#1a1d24]'
+                    : 'border-white/8 bg-[#0d0e11] hover:border-white/15 hover:bg-[#16181d]'
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs font-semibold text-white">{preset.name}</span>
+                  <span className="text-xs font-semibold text-zinc-100">{preset.name}</span>
                   <span
-                    className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                    className={`h-2 w-2 shrink-0 rounded-full ${
                       preset.tag === 'High Risk'
-                        ? 'bg-rose-500/20 text-rose-300'
+                        ? 'bg-rose-400'
                         : preset.tag === 'Medium Risk'
-                          ? 'bg-amber-500/20 text-amber-300'
-                          : 'bg-emerald-500/20 text-emerald-300'
+                          ? 'bg-amber-400'
+                          : 'bg-emerald-400'
                     }`}
-                  >
-                    {preset.tag}
-                  </span>
+                  />
                 </div>
-                <p className="mt-1.5 text-[11px] leading-relaxed text-slate-400">
+                <p className="mt-1.5 text-xs leading-relaxed text-zinc-400">
                   {preset.description}
                 </p>
               </button>
@@ -181,28 +180,32 @@ export function SinglePredictor() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-12">
-        <div className="space-y-5 rounded-2xl border border-slate-800 bg-slate-900/60 p-5 lg:col-span-7">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-            <h2 className="text-base font-semibold text-white">Thông số Khách hàng</h2>
+        <div className="space-y-5 rounded-2xl border border-white/8 bg-[#131418] p-5 lg:col-span-7">
+          <div className="flex items-center justify-between border-b border-white/8 pb-3">
+            <h2 className="text-base font-semibold text-zinc-100">Thông số khách hàng</h2>
             <button
               type="button"
               onClick={() => void runPrediction(customer)}
               disabled={loading}
-              className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 disabled:opacity-60"
+              className="inline-flex items-center gap-2 rounded-lg bg-zinc-100 px-4 py-2 text-xs font-semibold text-zinc-950 transition-colors duration-150 hover:bg-white disabled:opacity-60"
             >
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Activity className="h-4 w-4" />}
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} />
+              ) : (
+                <Activity className="h-4 w-4" strokeWidth={1.5} />
+              )}
               Phân tích Churn
             </button>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-5">
             <div>
-              <h3 className="mb-2.5 text-xs font-semibold uppercase tracking-wider text-indigo-400">
-                1. Nhân khẩu học & Gắn bó
+              <h3 className="mb-3 text-xs font-medium text-zinc-400">
+                Nhân khẩu học &amp; Gắn bó
               </h3>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
-                  <label className="mb-1 block text-xs text-slate-400">Giới tính</label>
+                  <label className="mb-1.5 block text-xs text-zinc-400">Giới tính</label>
                   <select
                     className={selectClass}
                     value={customer.gender}
@@ -213,7 +216,7 @@ export function SinglePredictor() {
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs text-slate-400">Khách hàng cao tuổi</label>
+                  <label className="mb-1.5 block text-xs text-zinc-400">Khách hàng cao tuổi</label>
                   <select
                     className={selectClass}
                     value={customer.SeniorCitizen}
@@ -224,7 +227,7 @@ export function SinglePredictor() {
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs text-slate-400">Có bạn đời (Partner)</label>
+                  <label className="mb-1.5 block text-xs text-zinc-400">Có bạn đời (Partner)</label>
                   <select
                     className={selectClass}
                     value={customer.Partner}
@@ -235,7 +238,7 @@ export function SinglePredictor() {
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs text-slate-400">Người phụ thuộc</label>
+                  <label className="mb-1.5 block text-xs text-zinc-400">Người phụ thuộc</label>
                   <select
                     className={selectClass}
                     value={customer.Dependents}
@@ -248,14 +251,17 @@ export function SinglePredictor() {
               </div>
             </div>
 
-            <div>
-              <h3 className="mb-2.5 text-xs font-semibold uppercase tracking-wider text-indigo-400">
-                2. Hợp đồng & Cước phí
+            <div className="border-t border-white/8 pt-4">
+              <h3 className="mb-3 text-xs font-medium text-zinc-400">
+                Hợp đồng &amp; Cước phí
               </h3>
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div className="grid gap-4 sm:grid-cols-3">
                 <div>
-                  <label className="mb-1 block text-xs text-slate-400">
-                    Số tháng gắn bó: <span className="font-semibold text-white">{customer.tenure}</span>
+                  <label className="mb-1.5 block text-xs text-zinc-400">
+                    Số tháng gắn bó:{' '}
+                    <span className="font-mono font-medium text-zinc-100 tabular-nums">
+                      {customer.tenure}
+                    </span>
                   </label>
                   <input
                     type="range"
@@ -263,13 +269,15 @@ export function SinglePredictor() {
                     max={72}
                     value={customer.tenure}
                     onChange={(e) => updateField('tenure', Number(e.target.value))}
-                    className="mt-2 w-full accent-indigo-500"
+                    className="mt-2 w-full accent-sky-400"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs text-slate-400">
-                    Cước tháng ($):{' '}
-                    <span className="font-semibold text-white">${customer.MonthlyCharges.toFixed(1)}</span>
+                  <label className="mb-1.5 block text-xs text-zinc-400">
+                    Cước tháng:{' '}
+                    <span className="font-mono font-medium text-zinc-100 tabular-nums">
+                      ${customer.MonthlyCharges.toFixed(1)}
+                    </span>
                   </label>
                   <input
                     type="range"
@@ -278,25 +286,25 @@ export function SinglePredictor() {
                     step={0.5}
                     value={customer.MonthlyCharges}
                     onChange={(e) => updateField('MonthlyCharges', Number(e.target.value))}
-                    className="mt-2 w-full accent-indigo-500"
+                    className="mt-2 w-full accent-sky-400"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs text-slate-400">Tổng cước ($)</label>
+                  <label className="mb-1.5 block text-xs text-zinc-400">Tổng cước ($)</label>
                   <input
                     type="number"
                     min={0}
                     step={0.01}
                     value={customer.TotalCharges}
                     onChange={(e) => updateField('TotalCharges', Math.max(0, Number(e.target.value)))}
-                    className={selectClass}
+                    className={`${selectClass} font-mono tabular-nums`}
                   />
                 </div>
               </div>
 
               <div className="mt-3 grid gap-3 sm:grid-cols-3">
                 <div>
-                  <label className="mb-1 block text-xs text-slate-400">Loại hợp đồng</label>
+                  <label className="mb-1.5 block text-xs text-zinc-400">Loại hợp đồng</label>
                   <select
                     className={selectClass}
                     value={customer.Contract}
@@ -308,7 +316,7 @@ export function SinglePredictor() {
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs text-slate-400">Thanh toán</label>
+                  <label className="mb-1.5 block text-xs text-zinc-400">Thanh toán</label>
                   <select
                     className={selectClass}
                     value={customer.PaymentMethod}
@@ -321,7 +329,7 @@ export function SinglePredictor() {
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs text-slate-400">Hóa đơn điện tử</label>
+                  <label className="mb-1.5 block text-xs text-zinc-400">Hóa đơn điện tử</label>
                   <select
                     className={selectClass}
                     value={customer.PaperlessBilling}
@@ -334,13 +342,13 @@ export function SinglePredictor() {
               </div>
             </div>
 
-            <div>
-              <h3 className="mb-2.5 text-xs font-semibold uppercase tracking-wider text-indigo-400">
-                3. Dịch vụ Viễn thông & Tiện ích
+            <div className="border-t border-white/8 pt-4">
+              <h3 className="mb-3 text-xs font-medium text-zinc-400">
+                Dịch vụ Viễn thông &amp; Tiện ích
               </h3>
               <div className="grid gap-3 sm:grid-cols-3">
                 <div>
-                  <label className="mb-1 block text-xs text-slate-400">Phone Service</label>
+                  <label className="mb-1.5 block text-xs text-zinc-400">Phone Service</label>
                   <select
                     className={selectClass}
                     value={customer.PhoneService}
@@ -351,7 +359,7 @@ export function SinglePredictor() {
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs text-slate-400">Multiple Lines</label>
+                  <label className="mb-1.5 block text-xs text-zinc-400">Multiple Lines</label>
                   <select
                     className={selectClass}
                     value={customer.MultipleLines}
@@ -366,7 +374,7 @@ export function SinglePredictor() {
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs text-slate-400">Internet Service</label>
+                  <label className="mb-1.5 block text-xs text-zinc-400">Internet Service</label>
                   <select
                     className={selectClass}
                     value={customer.InternetService}
@@ -393,7 +401,7 @@ export function SinglePredictor() {
                   ] as const
                 ).map(([fieldKey, label]) => (
                   <div key={fieldKey}>
-                    <label className="mb-1 block text-xs text-slate-400">{label}</label>
+                    <label className="mb-1.5 block text-xs text-zinc-400">{label}</label>
                     <select
                       className={selectClass}
                       value={customer[fieldKey]}
@@ -415,7 +423,7 @@ export function SinglePredictor() {
 
         <div className="space-y-5 lg:col-span-5">
           {error && (
-            <div className="rounded-2xl border border-rose-500/40 bg-rose-950/50 p-4 text-sm text-rose-200">
+            <div className="rounded-2xl border border-rose-500/30 bg-rose-950/30 p-4 text-sm text-rose-200">
               Lỗi gọi API: {error}. Hãy đảm bảo FastAPI đang chạy ở cổng 8000.
             </div>
           )}
@@ -428,18 +436,18 @@ export function SinglePredictor() {
                 prediction={prediction.churn_prediction}
               />
 
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
+              <div className="rounded-2xl border border-white/8 bg-[#131418] p-5">
                 <div className="mb-2 flex items-center gap-2">
                   {prediction.risk_level === 'Low' ? (
-                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                    <CheckCircle2 className="h-4 w-4 text-emerald-400" strokeWidth={1.5} />
                   ) : (
-                    <ShieldAlert className="h-4 w-4 text-amber-400" />
+                    <ShieldAlert className="h-4 w-4 text-amber-400" strokeWidth={1.5} />
                   )}
-                  <h3 className="text-sm font-semibold text-white">
-                    Khuyến nghị hành động (Retention Plan)
+                  <h3 className="text-sm font-semibold text-zinc-100">
+                    Khuyến nghị giữ chân (Retention plan)
                   </h3>
                 </div>
-                <p className="text-sm leading-relaxed text-slate-300">
+                <p className="text-sm leading-relaxed text-zinc-300">
                   {prediction.recommendation}
                 </p>
               </div>
@@ -451,18 +459,18 @@ export function SinglePredictor() {
       </div>
 
       {prediction && (
-        <div className="rounded-2xl border border-indigo-500/30 bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/30 p-5">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
-            <div className="flex items-center gap-2.5">
-              <div className="rounded-lg bg-indigo-500/20 p-2 text-indigo-300">
-                <SlidersHorizontal className="h-4 w-4" />
+        <div className="rounded-2xl border border-white/8 bg-[#131418] p-5">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-white/8 pb-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-[#1a1c22] text-zinc-200">
+                <SlidersHorizontal className="h-4 w-4" strokeWidth={1.5} />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-white">
-                  What-If Simulator — Mô phỏng kịch bản giữ chân khách hàng
+                <h3 className="text-sm font-semibold text-zinc-100">
+                  What-If Simulator — Mô phỏng kịch bản giữ chân
                 </h3>
-                <p className="text-xs text-slate-400">
-                  Thử thay đổi gói hợp đồng, dịch vụ hỗ trợ hoặc mức cước để xem xác suất Churn thay đổi theo thời gian thực.
+                <p className="text-xs text-zinc-400">
+                  Điều chỉnh hợp đồng, dịch vụ hỗ trợ hoặc mức cước để kiểm tra mức giảm rủi ro theo thời gian thực.
                 </p>
               </div>
             </div>
@@ -472,16 +480,17 @@ export function SinglePredictor() {
                 setSimCustomer(customer)
                 setSimPrediction(prediction)
               }}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-300 hover:bg-slate-800"
+              className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-[#0d0e11] px-3 py-1.5 text-xs font-medium text-zinc-300 transition-colors duration-150 hover:border-white/20 hover:text-zinc-100"
             >
-              <RotateCcw className="h-3.5 w-3.5" /> Đặt lại theo gốc
+              <RotateCcw className="h-3.5 w-3.5" strokeWidth={1.5} />
+              Đặt lại theo gốc
             </button>
           </div>
 
           <div className="grid gap-6 lg:grid-cols-12">
             <div className="grid gap-3 sm:grid-cols-2 lg:col-span-7">
               <div>
-                <label className="mb-1 block text-xs text-slate-400">Thử đổi Hợp đồng</label>
+                <label className="mb-1.5 block text-xs text-zinc-400">Thử đổi Hợp đồng</label>
                 <select
                   className={selectClass}
                   value={simCustomer.Contract}
@@ -493,7 +502,7 @@ export function SinglePredictor() {
                 </select>
               </div>
               <div>
-                <label className="mb-1 block text-xs text-slate-400">Thử đổi Thanh toán</label>
+                <label className="mb-1.5 block text-xs text-zinc-400">Thử đổi Thanh toán</label>
                 <select
                   className={selectClass}
                   value={simCustomer.PaymentMethod}
@@ -508,7 +517,7 @@ export function SinglePredictor() {
                 </select>
               </div>
               <div>
-                <label className="mb-1 block text-xs text-slate-400">Tặng Tech Support</label>
+                <label className="mb-1.5 block text-xs text-zinc-400">Tặng Tech Support</label>
                 <select
                   className={selectClass}
                   value={simCustomer.TechSupport}
@@ -523,7 +532,7 @@ export function SinglePredictor() {
                 </select>
               </div>
               <div>
-                <label className="mb-1 block text-xs text-slate-400">Tặng Online Security</label>
+                <label className="mb-1.5 block text-xs text-zinc-400">Tặng Online Security</label>
                 <select
                   className={selectClass}
                   value={simCustomer.OnlineSecurity}
@@ -538,9 +547,9 @@ export function SinglePredictor() {
                 </select>
               </div>
               <div className="sm:col-span-2">
-                <label className="mb-1 block text-xs text-slate-400">
-                  Giảm cước tháng xuống ($):{' '}
-                  <span className="font-semibold text-white">
+                <label className="mb-1.5 block text-xs text-zinc-400">
+                  Điều chỉnh cước tháng:{' '}
+                  <span className="font-mono font-medium text-zinc-100 tabular-nums">
                     ${simCustomer.MonthlyCharges.toFixed(1)}
                   </span>
                 </label>
@@ -553,42 +562,42 @@ export function SinglePredictor() {
                   onChange={(e) =>
                     void updateSimulation('MonthlyCharges', Number(e.target.value))
                   }
-                  className="w-full accent-indigo-500"
+                  className="w-full accent-sky-400"
                 />
               </div>
             </div>
 
-            <div className="flex flex-col justify-center rounded-xl border border-slate-800 bg-slate-950/70 p-4 lg:col-span-5">
-              <div className="flex items-center justify-between gap-2">
+            <div className="flex flex-col justify-center rounded-xl border border-white/8 bg-[#0d0e11] p-5 lg:col-span-5">
+              <div className="flex items-center justify-between gap-3">
                 <div>
-                  <div className="text-xs text-slate-400">Hiện tại</div>
-                  <div className="text-2xl font-bold text-slate-200">
+                  <div className="text-xs text-zinc-400">Hiện tại</div>
+                  <div className="mt-1 text-2xl font-semibold text-zinc-300 tabular-nums">
                     {(baseProb * 100).toFixed(1)}%
                   </div>
                 </div>
-                <ArrowRight className="h-5 w-5 text-slate-500" />
+                <ArrowRight className="h-4 w-4 text-zinc-500" strokeWidth={1.5} />
                 <div>
-                  <div className="text-xs text-slate-400">Sau can thiệp</div>
-                  <div className="text-2xl font-bold text-white">
+                  <div className="text-xs text-zinc-400">Sau can thiệp</div>
+                  <div className="mt-1 text-2xl font-semibold text-zinc-100 tabular-nums">
                     {simLoading ? '...' : `${(simProb * 100).toFixed(1)}%`}
                   </div>
                 </div>
                 <div
-                  className={`rounded-xl px-3 py-1.5 text-sm font-bold ${
-                    deltaPercent < 0
-                      ? 'bg-emerald-500/20 text-emerald-300'
-                      : deltaPercent > 0
-                        ? 'bg-rose-500/20 text-rose-300'
-                        : 'bg-slate-800 text-slate-300'
+                  className={`rounded-lg border px-3 py-1.5 font-mono text-sm font-semibold tabular-nums ${
+                    deltaNum < 0
+                      ? 'border-emerald-500/25 bg-emerald-500/10 text-emerald-300'
+                      : deltaNum > 0
+                        ? 'border-rose-500/25 bg-rose-500/10 text-rose-300'
+                        : 'border-white/10 bg-[#16181d] text-zinc-300'
                   }`}
                 >
-                  {deltaPercent > 0 ? `+${deltaPercent}%` : `${deltaPercent}%`}
+                  {deltaNum > 0 ? `+${deltaPercent}%` : `${deltaPercent}%`}
                 </div>
               </div>
               {simPrediction && (
-                <p className="mt-3 text-xs text-slate-400">
-                  Mức độ rủi ro sau mô phỏng:{' '}
-                  <span className="font-semibold text-slate-200">{simPrediction.risk_level}</span> —{' '}
+                <p className="mt-3 text-xs text-zinc-400">
+                  Phân tầng sau mô phỏng:{' '}
+                  <span className="font-medium text-zinc-200">{simPrediction.risk_level}</span> ·{' '}
                   {simPrediction.churn_prediction}
                 </p>
               )}
@@ -599,4 +608,3 @@ export function SinglePredictor() {
     </div>
   )
 }
-

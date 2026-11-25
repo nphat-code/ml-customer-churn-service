@@ -57,17 +57,17 @@ export function RiskGauge({ probability, riskLevel, prediction }: RiskGaugeProps
             {percent}%
           </div>
           <div className="mt-0.5 text-xs font-medium text-zinc-400">
-            Xác suất rời bỏ
+            Nguy cơ rời bỏ dịch vụ
           </div>
         </div>
       </div>
 
       <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
         <span className={`rounded-md border px-2.5 py-1 text-xs font-medium ${style.badge}`}>
-          {style.label} · {riskLevel}
+          {style.label}
         </span>
         <span className="rounded-md border border-white/8 bg-[#1a1c22] px-2.5 py-1 text-xs font-medium text-zinc-300">
-          {prediction === 'Churn' ? 'Dự đoán: Rời bỏ (Churn)' : 'Dự đoán: Ở lại (Retain)'}
+          {prediction === 'Churn' ? 'Cần chăm sóc giữ chân' : 'Khách hàng ổn định'}
         </span>
       </div>
     </div>

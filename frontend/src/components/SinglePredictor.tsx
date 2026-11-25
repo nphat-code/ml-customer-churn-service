@@ -29,6 +29,12 @@ const DEFAULT_CUSTOMER = CUSTOMER_PRESETS[0].data
 const selectClass =
   'w-full rounded-lg border border-white/10 bg-[#0d0e11] px-3 py-2 text-sm text-zinc-100 focus:border-sky-400 focus:outline-none focus:ring-1 focus:ring-sky-400'
 
+const RISK_LABELS = {
+  High: 'Rủi ro cao',
+  Medium: 'Rủi ro trung bình',
+  Low: 'Rủi ro thấp',
+}
+
 export function SinglePredictor() {
   const [customer, setCustomer] = useState<CustomerInput>(DEFAULT_CUSTOMER)
   const [activePresetId, setActivePresetId] = useState<string>(CUSTOMER_PRESETS[0].id)
@@ -138,7 +144,7 @@ export function SinglePredictor() {
           <div className="flex items-center gap-2">
             <UserCheck className="h-4 w-4 text-zinc-400" strokeWidth={1.5} />
             <span className="text-sm font-semibold text-zinc-100">
-              Hồ sơ mẫu (Preset profiles)
+              Hồ sơ khách hàng mẫu
             </span>
           </div>
           <span className="text-xs text-zinc-400">Chọn nhanh để kiểm thử</span>
@@ -194,7 +200,7 @@ export function SinglePredictor() {
               ) : (
                 <Activity className="h-4 w-4" strokeWidth={1.5} />
               )}
-              Phân tích Churn
+              Phân tích rủi ro
             </button>
           </div>
 
@@ -444,7 +450,7 @@ export function SinglePredictor() {
                     <ShieldAlert className="h-4 w-4 text-amber-400" strokeWidth={1.5} />
                   )}
                   <h3 className="text-sm font-semibold text-zinc-100">
-                    Khuyến nghị giữ chân (Retention plan)
+                    Kế hoạch giữ chân đề xuất
                   </h3>
                 </div>
                 <p className="text-sm leading-relaxed text-zinc-300">
@@ -467,7 +473,7 @@ export function SinglePredictor() {
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-zinc-100">
-                  What-If Simulator — Mô phỏng kịch bản giữ chân
+                  Mô phỏng kịch bản giữ chân
                 </h3>
                 <p className="text-xs text-zinc-400">
                   Điều chỉnh hợp đồng, dịch vụ hỗ trợ hoặc mức cước để kiểm tra mức giảm rủi ro theo thời gian thực.
@@ -596,9 +602,14 @@ export function SinglePredictor() {
               </div>
               {simPrediction && (
                 <p className="mt-3 text-xs text-zinc-400">
-                  Phân tầng sau mô phỏng:{' '}
-                  <span className="font-medium text-zinc-200">{simPrediction.risk_level}</span> ·{' '}
-                  {simPrediction.churn_prediction}
+                  Mức độ sau mô phỏng:{' '}
+                  <span className="font-medium text-zinc-200">
+                    {RISK_LABELS[simPrediction.risk_level]}
+                  </span>{' '}
+                  ·{' '}
+                  {simPrediction.churn_prediction === 'Churn'
+                    ? 'Vẫn cần chăm sóc'
+                    : 'Ổn định'}
                 </p>
               )}
             </div>

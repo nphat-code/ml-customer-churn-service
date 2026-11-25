@@ -168,9 +168,9 @@ export function BatchDashboard() {
       : 0
 
   const pieData = [
-    { name: 'High Risk', value: highCount, color: PIE_COLORS.High },
-    { name: 'Medium Risk', value: mediumCount, color: PIE_COLORS.Medium },
-    { name: 'Low Risk', value: lowCount, color: PIE_COLORS.Low },
+    { name: 'Rủi ro cao', value: highCount, color: PIE_COLORS.High },
+    { name: 'Trung bình', value: mediumCount, color: PIE_COLORS.Medium },
+    { name: 'Rủi ro thấp', value: lowCount, color: PIE_COLORS.Low },
   ].filter((d) => d.value > 0)
 
   const filteredRows =
@@ -181,13 +181,10 @@ export function BatchDashboard() {
       <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/8 bg-[#131418] p-5">
         <div>
           <h2 className="text-base font-semibold text-zinc-100">
-            Dự đoán hàng loạt &amp; Phân tích tập khách hàng (CSV Batch)
+            Phân tích tập khách hàng hàng loạt (CSV)
           </h2>
           <p className="mt-1 text-xs text-zinc-400">
-            Tải lên file CSV chuẩn Telco Customer Churn (tối đa 200 dòng/lượt) hoặc dùng bộ dữ liệu mẫu qua{' '}
-            <code className="rounded bg-[#1d2027] px-1.5 py-0.5 font-mono text-zinc-200">
-              /api/v1/predict/batch
-            </code>
+            Tải lên danh sách khách hàng (.csv, tối đa 200 dòng/lượt) hoặc dùng dữ liệu mẫu để lọc nhóm cần chăm sóc ưu tiên
           </p>
         </div>
 
@@ -301,13 +298,13 @@ export function BatchDashboard() {
               </div>
               <div className="mt-2 flex justify-center gap-4 text-xs text-zinc-300 tabular-nums">
                 <span className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-rose-400" /> High ({highCount})
+                  <span className="h-2 w-2 rounded-full bg-rose-400" /> Cao ({highCount})
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-amber-400" /> Medium ({mediumCount})
+                  <span className="h-2 w-2 rounded-full bg-amber-400" /> Trung bình ({mediumCount})
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-emerald-400" /> Low ({lowCount})
+                  <span className="h-2 w-2 rounded-full bg-emerald-400" /> Thấp ({lowCount})
                 </span>
               </div>
             </div>
@@ -318,7 +315,14 @@ export function BatchDashboard() {
                   Danh sách khách hàng (Sắp xếp theo rủi ro giảm dần)
                 </h3>
                 <div className="flex gap-1.5">
-                  {(['ALL', 'High', 'Medium', 'Low'] as const).map((tier) => (
+                  {(
+                    [
+                      ['ALL', 'Tất cả'],
+                      ['High', 'Cao'],
+                      ['Medium', 'Trung bình'],
+                      ['Low', 'Thấp'],
+                    ] as const
+                  ).map(([tier, label]) => (
                     <button
                       key={tier}
                       type="button"
@@ -329,7 +333,7 @@ export function BatchDashboard() {
                           : 'bg-[#1d2027] text-zinc-300 hover:bg-[#262a33]'
                       }`}
                     >
-                      {tier === 'ALL' ? 'Tất cả' : tier}
+                      {label}
                     </button>
                   ))}
                 </div>
@@ -371,7 +375,11 @@ export function BatchDashboard() {
                                   : 'border-emerald-500/25 bg-emerald-500/10 text-emerald-300'
                             }`}
                           >
-                            {row.result.risk_level}
+                            {row.result.risk_level === 'High'
+                              ? 'Cao'
+                              : row.result.risk_level === 'Medium'
+                                ? 'Trung bình'
+                                : 'Thấp'}
                           </span>
                         </td>
                       </tr>

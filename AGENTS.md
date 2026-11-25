@@ -11,3 +11,7 @@
 3. **Tiêu chuẩn ghi chép tài liệu (`docs/NOTES.md`):**
    - Chỉ ghi chép kiến thức chuyên sâu, cốt lõi: toán học, bản chất thuật toán Machine Learning, trade-offs kỹ thuật và kiến trúc hệ thống.
    - Tuyệt đối không ghi chép các thông tin vụn vặt, dịch thuật từ vựng tiếng Anh cơ bản (như dịch nghĩa tên cột) hoặc các nội dung hiển nhiên.
+
+4. **Thiết kế giao diện hướng người dùng cuối (End-User First UI):**
+   - Web UI (`frontend/`) phục vụ nhân viên CSKH và kinh doanh, sử dụng 100% ngôn ngữ nghiệp vụ tự nhiên, dễ hiểu.
+   - Không hiển thị các chi tiết kỹ thuật thô lên màn hình làm việc (như đường dẫn API `/api/...`, tên thuật toán/pipeline nội bộ, chỉ số log-odds SHAP thô hay bảng benchmark mô hình — các nội dung kỹ thuật này thuộc về `notebooks/` và `docs/`).

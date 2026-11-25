@@ -43,7 +43,7 @@ export function App() {
                 ChurnGuard
               </h1>
               <p className="text-xs text-zinc-400">
-                Telco retention &amp; churn telemetry
+                Hệ thống dự đoán &amp; giữ chân khách hàng
               </p>
             </div>
           </div>
@@ -60,7 +60,7 @@ export function App() {
                 }`}
               >
                 <Layers className="h-4 w-4" strokeWidth={1.5} />
-                Phân tích &amp; What-If
+                Phân tích khách hàng
               </button>
               <button
                 type="button"
@@ -72,7 +72,7 @@ export function App() {
                 }`}
               >
                 <BarChart3 className="h-4 w-4" strokeWidth={1.5} />
-                Batch CSV
+                Phân tích hàng loạt (CSV)
               </button>
             </nav>
 
@@ -86,9 +86,7 @@ export function App() {
                   isHealthy ? 'bg-emerald-400' : 'bg-rose-400'
                 }`}
               />
-              <span className="font-mono text-[11px] tabular-nums">
-                {isHealthy ? health.model_version : 'API offline'}
-              </span>
+              <span>{isHealthy ? 'Hệ thống sẵn sàng' : 'Mất kết nối máy chủ'}</span>
               <RefreshCw
                 className={`h-3.5 w-3.5 text-zinc-400 ${checkingHealth ? 'animate-spin' : ''}`}
                 strokeWidth={1.5}

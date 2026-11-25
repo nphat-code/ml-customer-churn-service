@@ -7,7 +7,7 @@ interface XaiFactorsChartProps {
 
 const FEATURE_LABELS: Record<string, string> = {
   Contract: 'Loại hợp đồng',
-  tenure: 'Số tháng gắn bó',
+  tenure: 'Thời gian gắn bó',
   OnlineSecurity: 'Bảo mật trực tuyến',
   TechSupport: 'Hỗ trợ kỹ thuật',
   InternetService: 'Dịch vụ Internet',
@@ -27,16 +27,41 @@ const FEATURE_LABELS: Record<string, string> = {
   gender: 'Giới tính',
 }
 
+const VALUE_LABELS: Record<string, string> = {
+  'Month-to-month': 'Theo tháng',
+  'One year': '1 năm',
+  'Two year': '2 năm',
+  Yes: 'Có',
+  No: 'Không',
+  'No internet service': 'Không dùng Internet',
+  'No phone service': 'Không dùng thoại',
+  'Fiber optic': 'Cáp quang',
+  'Electronic check': 'Séc/Ví điện tử',
+  'Mailed check': 'Séc bưu điện',
+  'Bank transfer (automatic)': 'Chuyển khoản tự động',
+  'Credit card (automatic)': 'Thẻ tín dụng tự động',
+  Male: 'Nam',
+  Female: 'Nữ',
+}
+
+function formatFactorValue(feature: string, value: string): string {
+  if (feature === 'tenure') return `${value} tháng`
+  if (feature === 'MonthlyCharges' || feature === 'TotalCharges') return `$${value}`
+  if (feature === 'SeniorCitizen') return value === '1' ? 'Có' : 'Không'
+  return VALUE_LABELS[value] ?? value
+}
+
 export function XaiFactorsChart({ factors }: XaiFactorsChartProps) {
   if (!factors || factors.length === 0) {
     return (
       <div className="rounded-2xl border border-white/8 bg-[#131418] p-5 text-sm text-zinc-400">
-        Chưa có dữ liệu giải thích SHAP cho dự đoán này
+        Chưa có dữ liệu phân tích nguyên nhân
       </div>
     )
   }
 
   const maxImpact = Math.max(...factors.map((f) => Math.abs(f.impact)), 0.1)
+  const totalImpact = factors.reduce((sum, f) => sum + Math.abs(f.impact), 0) || 1
 
   return (
     <div className="rounded-2xl border border-white/8 bg-[#131418] p-5">
@@ -44,11 +69,11 @@ export function XaiFactorsChart({ factors }: XaiFactorsChartProps) {
         <div className="flex items-center gap-2">
           <BarChart2 className="h-4 w-4 text-zinc-400" strokeWidth={1.5} />
           <h3 className="text-sm font-semibold text-zinc-100">
-            Giải thích SHAP (Feature impact)
+            Yếu tố ảnh hưởng chính
           </h3>
         </div>
-        <span className="font-mono text-xs text-zinc-400 tabular-nums">
-          Top {factors.length}
+        <span className="text-xs text-zinc-400 tabular-nums">
+          {factors.length} yếu tố nổi bật
         </span>
       </div>
 
@@ -56,7 +81,9 @@ export function XaiFactorsChart({ factors }: XaiFactorsChartProps) {
         {factors.map((factor) => {
           const isIncrease = factor.direction === 'increase'
           const widthPct = Math.max(8, Math.round((Math.abs(factor.impact) / maxImpact) * 100))
+          const sharePct = Math.round((Math.abs(factor.impact) / totalImpact) * 100)
           const label = FEATURE_LABELS[factor.feature] ?? factor.feature
+          const displayValue = formatFactorValue(factor.feature, factor.value)
 
           return (
             <div key={factor.feature} className="space-y-1.5">
@@ -68,16 +95,16 @@ export function XaiFactorsChart({ factors }: XaiFactorsChartProps) {
                     <ArrowDownRight className="h-4 w-4 shrink-0 text-emerald-400" strokeWidth={1.5} />
                   )}
                   <span className="truncate font-medium text-zinc-200">{label}</span>
-                  <span className="shrink-0 rounded bg-[#1d2027] px-1.5 py-0.5 font-mono text-[11px] text-zinc-300">
-                    {factor.value}
+                  <span className="shrink-0 rounded bg-[#1d2027] px-1.5 py-0.5 text-[11px] text-zinc-300">
+                    {displayValue}
                   </span>
                 </div>
                 <span
-                  className={`shrink-0 font-mono font-medium tabular-nums ${
+                  className={`shrink-0 font-mono text-xs font-medium tabular-nums ${
                     isIncrease ? 'text-rose-400' : 'text-emerald-400'
                   }`}
                 >
-                  {factor.impact > 0 ? `+${factor.impact.toFixed(3)}` : factor.impact.toFixed(3)}
+                  {isIncrease ? 'Tăng' : 'Giảm'} · {sharePct}%
                 </span>
               </div>
               <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#1e2027]">
@@ -95,10 +122,10 @@ export function XaiFactorsChart({ factors }: XaiFactorsChartProps) {
 
       <div className="mt-4 flex items-center justify-between border-t border-white/8 pt-3 text-xs text-zinc-400">
         <span className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-rose-400" /> Tăng nguy cơ Churn
+          <span className="h-2 w-2 rounded-full bg-rose-400" /> Đẩy tăng nguy cơ rời bỏ
         </span>
         <span className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-emerald-400" /> Giữ chân khách hàng
+          <span className="h-2 w-2 rounded-full bg-emerald-400" /> Giúp giữ chân khách hàng
         </span>
       </div>
     </div>

@@ -4,6 +4,23 @@ File nhật ký theo dõi tiến trình thực hiện đồ án Customer Churn P
 
 ---
 
+### 🗓️ [2026-11-25] — Hoàn thiện Project 2 (React SaaS Dashboard), XAI Backend & Đóng gói Docker
+
+* **Nội dung công việc:**
+  - **Nâng cấp Backend XAI (`app/schemas.py`, `app/service.py`):** Bổ sung `FeatureContribution` và `top_factors` sử dụng TreeSHAP native của XGBoost (`pred_contribs=True`), gom nhóm đóng góp theo từng đặc trưng gốc.
+  - **Xây dựng Frontend SaaS Dashboard (`frontend/`):** Khởi tạo ứng dụng **React + Vite + TypeScript + Tailwind CSS + Recharts** với:
+    - **Preset Profiles:** 4 hồ sơ khách hàng mẫu 1-click.
+    - **What-If Simulator:** Mô phỏng thay đổi hợp đồng, phương thức thanh toán, `TechSupport`, `OnlineSecurity`, `MonthlyCharges` theo thời gian thực.
+    - **Batch CSV Dashboard:** Upload CSV hoặc chạy thử 16 khách hàng mẫu qua `/api/v1/predict/batch`, trực quan hóa biểu đồ phân bố tầng rủi ro và bảng lọc ưu tiên.
+    - **Explainable AI & Health Monitor:** Hiển thị Risk Gauge, biểu đồ SHAP `top_factors` và thanh trạng thái `/health`.
+  - **Hoàn thiện Notebook & Tài liệu:** Lưu output thực thi `notebooks/customer_churn_experiments.ipynb`, cập nhật `note.txt`, `docs/PLAN.md`, `README.md`, và bổ sung `Dockerfile`, `frontend/Dockerfile`, `docker-compose.yml`.
+  - **Quy chuẩn Git:** Cập nhật `AGENTS.md` quy định tự động commit và push ngay sau khi hoàn thành và kiểm thử pass mỗi phần.
+* **Kiểm thử:**
+  - `npm run build` (`tsc -b && vite build`): Thành công.
+  - `py -3.10 -m pytest -q`: 4/4 test cases passed.
+
+---
+
 ### 🗓️ [2026-10-03] — Đối chiếu yêu cầu môn học, hoàn thiện lý thuyết toán học & Hệ thống hóa Nhật ký
 
 * **Nội dung công việc:**

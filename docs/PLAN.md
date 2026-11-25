@@ -11,9 +11,9 @@
 ### Đối chiếu 3 Hợp phần Project (Tỷ trọng 50% điểm số):
 | Hợp phần theo `note.txt` | Yêu cầu chi tiết | Trạng thái thực tế | Ghi chú kỹ thuật |
 | :--- | :--- | :---: | :--- |
-| **Project 1: Backend REST API** | • Model as a Service (Python, No UI)<br>• Input: Sample JSON; Output: Result JSON | **✅ Hoàn thành** | FastAPI, Pydantic schemas, Health check, `/api/v1/predict` |
-| **Project 2: Frontend / Demo UI** | • Ứng dụng demo có giao diện người dùng<br>• Gợi ý: Streamlit, React, hoặc HF Space | **🔲 Cần làm** | Xây dựng Streamlit app cho phép nhập liệu, gạt slider, gọi API hiển thị kết quả trực quan |
-| **Project 3: Jupyter Notebooks** | • Notebooks chuẩn cấu trúc dự án ML<br>• Lưu lại toàn bộ các thử nghiệm (*experiments*) | **🔲 Cần làm** | Tạo `notebooks/customer_churn_experiments.ipynb` (EDA, huấn luyện, so sánh, visualizations) |
+| **Project 1: Backend REST API** | • Model as a Service (Python, No UI)<br>• Input: Sample JSON; Output: Result JSON | **✅ Hoàn thành** | FastAPI, Pydantic schemas, Health check, `/api/v1/predict`, `/api/v1/predict/batch`, CORS |
+| **Project 2: Frontend / Demo UI** | • Ứng dụng web demo tương tác gọi API<br>• Định hướng sản phẩm nổi bật chuẩn SaaS | **🔲 Cần làm** | **React (Vite + TypeScript + Tailwind CSS + Recharts)**: Preset Profiles, What-If Simulator, Batch CSV Dashboard, XAI |
+| **Project 3: Jupyter Notebooks** | • Notebooks chuẩn cấu trúc dự án ML<br>• Lưu lại toàn bộ các thử nghiệm (*experiments*) | **✅ Hoàn thành** | `notebooks/customer_churn_experiments.ipynb`, 5 biểu đồ trong `docs/images/`, `docs/EXPERIMENTS.md`, `docs/model_benchmark.json` |
 
 ---
 
@@ -61,29 +61,28 @@
   - [x] `docs/NOTES.md`: Tài liệu chuyên sâu về toán học ML (chứng minh StandardScaler, bản chất trực giao One-Hot, cơ chế GLM / Logit / Sigmoid / BCE / L-BFGS của Logistic Regression).
   - [x] `docs/PRESENTATION_NOTES.md`: Kịch bản thuyết trình và bộ câu hỏi phản biện bảo vệ đồ án.
 
+* **Jupyter Notebooks & Trực quan hóa thực nghiệm (Project 3):**
+  - [x] Hoàn thiện `notebooks/customer_churn_experiments.ipynb` gồm: EDA & khám phá dữ liệu, minh họa tiền xử lý (`StandardScaler`, `OneHotEncoder`), so sánh 4 mô hình, ROC Curves, Confusion Matrix & Feature Importance.
+  - [x] Xuất 5 biểu đồ phân tích ra `docs/images/` và ghi chép phân tích tại `docs/FIGURES_ANALYSIS.md`, `docs/ML_WORKFLOW.md`, `docs/EXPERIMENTS.md`.
+  - [x] Cập nhật Pydantic schemas (`json_schema_extra`) và đồng bộ số liệu `docs/MODEL_REPORT.md` với `docs/model_benchmark.json`.
+
 ---
 
 ### 2. Những việc CẦN LÀM (To-Do) 🔲
 
-#### 🎯 Nhóm nhiệm vụ bắt buộc theo `note.txt`:
+#### 🎯 Nhóm nhiệm vụ bắt buộc theo `note.txt` (Project 2 — Standout Web Product):
 
-1. **Xây dựng Jupyter Notebooks lưu vết thực nghiệm (Project 3):**
-   - [ ] Tạo file `notebooks/customer_churn_experiments.ipynb` hoàn chỉnh theo quy trình chuẩn Data Science:
-     - **Phần 1: EDA & Khám phá dữ liệu:** Vẽ biểu đồ phân phối biến mục tiêu (mất cân bằng), mối quan hệ giữa `tenure`, `MonthlyCharges`, `Contract` với `Churn`.
-     - **Phần 2: Data Preprocessing:** Minh họa trực quan các bước scale và mã hóa One-Hot.
-     - **Phần 3: Huấn luyện & So sánh mô hình:** Code chạy thực nghiệm 4 mô hình (Logistic Regression, Random Forest, LightGBM, XGBoost).
-     - **Phần 4: Đánh giá & Trực quan hóa kết quả:** Vẽ biểu đồ ROC Curve so sánh 4 mô hình, vẽ ma trận nhầm lẫn (Confusion Matrix) và Feature Importance của mô hình XGBoost.
+1. **Xây dựng Frontend Web App chuẩn SaaS (`frontend/`) bằng React (Vite + TypeScript + Tailwind CSS + Recharts):**
+   - [ ] Khởi tạo project `frontend/` với Vite, React, TypeScript, Tailwind CSS, Recharts và Lucide Icons.
+   - [ ] **Preset Profiles (1-click Demo):** Tạo 3–4 hồ sơ khách hàng mẫu (nguy cơ cao, trung bình, trung thành) để kiểm thử nhanh.
+   - [ ] **Single Prediction & What-If Simulator:** Form nhập liệu trực quan + chế độ mô phỏng thay đổi hợp đồng/dịch vụ (`Contract`, `TechSupport`, `OnlineSecurity`, `tenure`, `MonthlyCharges`) để so sánh xác suất Churn trước và sau can thiệp.
+   - [ ] **Batch Prediction & CSV Dashboard:** Upload file CSV hoặc chạy mẫu hàng loạt qua `POST /api/v1/predict/batch`, hiển thị biểu đồ phân bố rủi ro (Low / Medium / High) và danh sách khách hàng cần ưu tiên giữ chân.
+   - [ ] **Explainable AI (XAI) & System Health:** Tích hợp thanh trạng thái API (`/health`, model version) và hiển thị các yếu tố chính ảnh hưởng đến dự đoán của từng khách hàng.
 
-2. **Xây dựng ứng dụng Demo UI tương tác (Project 2):**
-   - [ ] Xây dựng app giao diện người dùng bằng **Streamlit** (`app_ui/streamlit_app.py` hoặc `streamlit_app.py`):
-     - Form nhập liệu trực quan với sliders (tenure, cước phí) và dropdowns (loại hợp đồng, dịch vụ internet,...).
-     - Nút bấm *"Dự đoán rủi ro"* gọi trực tiếp vào API `POST /api/v1/predict`.
-     - Hiển thị kết quả bằng metric cards, thanh đo xác suất trực quan (Gauge chart), nhãn phân loại rủi ro (Xanh/Vàng/Đỏ) và danh sách hành động khuyến nghị giữ chân khách hàng.
-
-#### 🛠️ Nhóm nhiệm vụ hoàn thiện & nâng cao chất lượng code:
-3. **Cập nhật Schema Pydantic:** Sửa các warning `example=` thành `json_schema_extra` trong `app/schemas.py`.
-4. **Cập nhật bảng số liệu trong MODEL_REPORT.md:** Đồng bộ bảng chỉ số thực tế từ `docs/model_benchmark.json`.
-5. **Đóng gói Docker (Tùy chọn nâng cao):** Viết `Dockerfile` và `docker-compose.yml` để chạy cả FastAPI backend và Streamlit frontend cùng lúc.
+#### 🛠️ Nhóm nhiệm vụ hoàn thiện & đóng gói:
+2. **Mở rộng nhẹ Backend (nếu cần cho XAI):** Bổ sung thông tin feature contribution / SHAP top factors trong response dự đoán để UI giải thích trực quan lý do Churn.
+3. **Đồng bộ tài liệu & Kiểm thử:** Cập nhật `README.md`, `docs/DEVLOG.md` sau khi hoàn thành `frontend/` và chạy lại `pytest`.
+4. **Đóng gói Docker (Tùy chọn nâng cao):** Viết `Dockerfile` và `docker-compose.yml` để chạy đồng thời FastAPI backend và React frontend.
 
 ---
 

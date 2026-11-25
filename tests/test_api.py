@@ -55,5 +55,7 @@ def test_predict_single_success():
         assert 0.0 <= data["churn_probability"] <= 1.0
         assert data["risk_level"] in ["Low", "Medium", "High"]
         assert len(data["recommendation"]) > 0
+        assert isinstance(data["top_factors"], list)
+        assert len(data["top_factors"]) > 0
     else:
         assert response.status_code == 503

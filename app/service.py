@@ -1,7 +1,9 @@
 import os
+from collections import defaultdict
 import joblib
 import pandas as pd
-from app.schemas import CustomerInput, ChurnPredictionResponse
+import xgboost as xgb
+from app.schemas import CustomerInput, ChurnPredictionResponse, FeatureContribution
 
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "..", "models", "best_churn_pipeline.joblib")
 
@@ -42,6 +44,51 @@ class ChurnModelService:
 
         return "; ".join(recs) + "."
 
+    def _extract_top_factors(
+        self, df_row: pd.DataFrame, input_data: CustomerInput, top_k: int = 6
+    ) -> list[FeatureContribution]:
+        try:
+            preprocessor = self.pipeline.named_steps.get("preprocessor")
+            classifier = self.pipeline.named_steps.get("classifier")
+            if preprocessor is None or not hasattr(classifier, "get_booster"):
+                return []
+
+            transformed = preprocessor.transform(df_row)
+            contribs = classifier.get_booster().predict(
+                xgb.DMatrix(transformed), pred_contribs=True
+            )[0][:-1]
+            feature_names = preprocessor.get_feature_names_out()
+            raw_values = input_data.model_dump()
+            grouped_impacts: dict[str, float] = defaultdict(float)
+
+            for encoded_name, impact in zip(feature_names, contribs):
+                clean_name = encoded_name.split("__", 1)[-1]
+                matched_key = next(
+                    (
+                        key
+                        for key in raw_values
+                        if clean_name == key or clean_name.startswith(f"{key}_")
+                    ),
+                    clean_name,
+                )
+                grouped_impacts[matched_key] += float(impact)
+
+            sorted_factors = sorted(
+                grouped_impacts.items(), key=lambda item: abs(item[1]), reverse=True
+            )[:top_k]
+
+            return [
+                FeatureContribution(
+                    feature=key,
+                    value=str(raw_values.get(key, "")),
+                    impact=round(val, 4),
+                    direction="increase" if val >= 0 else "decrease",
+                )
+                for key, val in sorted_factors
+            ]
+        except Exception:
+            return []
+
     def predict_single(self, input_data: CustomerInput) -> ChurnPredictionResponse:
         if not self.is_loaded:
             raise RuntimeError("Model is not loaded. Please train and export model pipeline first.")
@@ -59,6 +106,7 @@ class ChurnModelService:
             risk_level = "Low"
 
         recommendation = self._generate_recommendation(input_data, churn_prob)
+        top_factors = self._extract_top_factors(df_row, input_data)
 
         return ChurnPredictionResponse(
             churn_prediction=prediction_label,
@@ -66,6 +114,7 @@ class ChurnModelService:
             risk_level=risk_level,
             recommendation=recommendation,
             model_version=self.model_name,
+            top_factors=top_factors,
         )
 
 

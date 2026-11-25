@@ -29,12 +29,20 @@ class CustomerInput(BaseModel):
     TotalCharges: float = Field(..., ge=0.0, description="Total charges amount in USD", json_schema_extra={"example": 1026.00})
 
 
+class FeatureContribution(BaseModel):
+    feature: str
+    value: str
+    impact: float
+    direction: Literal["increase", "decrease"]
+
+
 class ChurnPredictionResponse(BaseModel):
     churn_prediction: Literal["Churn", "Retain"] = Field(..., description="Predicted churn status")
     churn_probability: float = Field(..., description="Probability of customer churning [0.0 - 1.0]")
     risk_level: Literal["Low", "Medium", "High"] = Field(..., description="Calculated churn risk tier")
     recommendation: str = Field(..., description="Actionable retention advice based on customer profile")
     model_version: str = Field(..., description="Model version/name used for inference")
+    top_factors: List[FeatureContribution] = Field(default_factory=list, description="Top SHAP feature contributions")
 
 
 class BatchCustomerInput(BaseModel):

@@ -12,7 +12,7 @@
 | Hợp phần theo `note.txt` | Yêu cầu chi tiết | Trạng thái thực tế | Ghi chú kỹ thuật |
 | :--- | :--- | :---: | :--- |
 | **Project 1: Backend REST API** | • Model as a Service (Python, No UI)<br>• Input: Sample JSON; Output: Result JSON | **✅ Hoàn thành** | FastAPI, Pydantic schemas, Health check, `/api/v1/predict`, `/api/v1/predict/batch`, CORS |
-| **Project 2: Frontend / Demo UI** | • Ứng dụng web demo tương tác gọi API<br>• Định hướng sản phẩm nổi bật chuẩn SaaS | **🔲 Cần làm** | **React (Vite + TypeScript + Tailwind CSS + Recharts)**: Preset Profiles, What-If Simulator, Batch CSV Dashboard, XAI |
+| **Project 2: Frontend / Demo UI** | • Ứng dụng web demo tương tác gọi API<br>• Định hướng sản phẩm nổi bật chuẩn SaaS | **✅ Hoàn thành** | **React (Vite + TypeScript + Tailwind CSS + Recharts)**: Preset Profiles, What-If Simulator, Batch CSV Dashboard, XAI |
 | **Project 3: Jupyter Notebooks** | • Notebooks chuẩn cấu trúc dự án ML<br>• Lưu lại toàn bộ các thử nghiệm (*experiments*) | **✅ Hoàn thành** | `notebooks/customer_churn_experiments.ipynb`, 5 biểu đồ trong `docs/images/`, `docs/EXPERIMENTS.md`, `docs/model_benchmark.json` |
 
 ---

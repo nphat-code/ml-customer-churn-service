@@ -63,11 +63,16 @@ Chạy notebook trong `notebooks/02_model_training.ipynb` hoặc script `src/tra
 
 ### 4. Khởi chạy REST API Service
 ```bash
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+py -3.10 -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### 5. Truy cập Swagger UI kiểm thử
-Mở trình duyệt tại: **`http://localhost:8000/docs`** để gửi request kiểm thử trực tiếp trên giao diện tương tác của Swagger UI.
+### 5. Khởi chạy Frontend SaaS Dashboard (React)
+```bash
+cd frontend
+npm install
+npm run dev
+```
+Truy cập giao diện tại **`http://localhost:5173`** (hoặc Swagger UI tại **`http://localhost:8000/docs`**).
 
 ---
 

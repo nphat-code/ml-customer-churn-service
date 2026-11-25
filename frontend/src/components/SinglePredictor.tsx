@@ -217,8 +217,8 @@ export function SinglePredictor() {
                     value={customer.gender}
                     onChange={(e) => updateField('gender', e.target.value as 'Male' | 'Female')}
                   >
-                    <option value="Female">Female (Nữ)</option>
-                    <option value="Male">Male (Nam)</option>
+                    <option value="Female">Nữ</option>
+                    <option value="Male">Nam</option>
                   </select>
                 </div>
                 <div>
@@ -228,19 +228,19 @@ export function SinglePredictor() {
                     value={customer.SeniorCitizen}
                     onChange={(e) => updateField('SeniorCitizen', Number(e.target.value))}
                   >
-                    <option value={0}>Không (0)</option>
-                    <option value={1}>Có (1)</option>
+                    <option value={0}>Không</option>
+                    <option value={1}>Có</option>
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-xs text-zinc-400">Có bạn đời (Partner)</label>
+                  <label className="mb-1.5 block text-xs text-zinc-400">Có bạn đời / gia đình</label>
                   <select
                     className={selectClass}
                     value={customer.Partner}
                     onChange={(e) => updateField('Partner', e.target.value as YesNo)}
                   >
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
+                    <option value="Yes">Có</option>
+                    <option value="No">Không</option>
                   </select>
                 </div>
                 <div>
@@ -250,8 +250,8 @@ export function SinglePredictor() {
                     value={customer.Dependents}
                     onChange={(e) => updateField('Dependents', e.target.value as YesNo)}
                   >
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
+                    <option value="Yes">Có</option>
+                    <option value="No">Không</option>
                   </select>
                 </div>
               </div>
@@ -316,9 +316,9 @@ export function SinglePredictor() {
                     value={customer.Contract}
                     onChange={(e) => updateField('Contract', e.target.value as ContractOption)}
                   >
-                    <option value="Month-to-month">Month-to-month</option>
-                    <option value="One year">One year</option>
-                    <option value="Two year">Two year</option>
+                    <option value="Month-to-month">Theo tháng</option>
+                    <option value="One year">1 năm</option>
+                    <option value="Two year">2 năm</option>
                   </select>
                 </div>
                 <div>
@@ -328,10 +328,10 @@ export function SinglePredictor() {
                     value={customer.PaymentMethod}
                     onChange={(e) => updateField('PaymentMethod', e.target.value as PaymentMethodOption)}
                   >
-                    <option value="Electronic check">Electronic check</option>
-                    <option value="Mailed check">Mailed check</option>
-                    <option value="Bank transfer (automatic)">Bank transfer (auto)</option>
-                    <option value="Credit card (automatic)">Credit card (auto)</option>
+                    <option value="Electronic check">Ví / Séc điện tử</option>
+                    <option value="Mailed check">Séc bưu điện</option>
+                    <option value="Bank transfer (automatic)">Chuyển khoản tự động</option>
+                    <option value="Credit card (automatic)">Thẻ tín dụng tự động</option>
                   </select>
                 </div>
                 <div>
@@ -341,8 +341,8 @@ export function SinglePredictor() {
                     value={customer.PaperlessBilling}
                     onChange={(e) => updateField('PaperlessBilling', e.target.value as YesNo)}
                   >
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
+                    <option value="Yes">Có</option>
+                    <option value="No">Không</option>
                   </select>
                 </div>
               </div>
@@ -354,18 +354,18 @@ export function SinglePredictor() {
               </h3>
               <div className="grid gap-3 sm:grid-cols-3">
                 <div>
-                  <label className="mb-1.5 block text-xs text-zinc-400">Phone Service</label>
+                  <label className="mb-1.5 block text-xs text-zinc-400">Dịch vụ thoại</label>
                   <select
                     className={selectClass}
                     value={customer.PhoneService}
                     onChange={(e) => updateField('PhoneService', e.target.value as YesNo)}
                   >
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
+                    <option value="Yes">Có</option>
+                    <option value="No">Không</option>
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-xs text-zinc-400">Multiple Lines</label>
+                  <label className="mb-1.5 block text-xs text-zinc-400">Đa đường dây</label>
                   <select
                     className={selectClass}
                     value={customer.MultipleLines}
@@ -374,13 +374,13 @@ export function SinglePredictor() {
                       updateField('MultipleLines', e.target.value as MultipleLinesOption)
                     }
                   >
-                    <option value="No">No</option>
-                    <option value="Yes">Yes</option>
-                    <option value="No phone service">No phone service</option>
+                    <option value="No">Không</option>
+                    <option value="Yes">Có</option>
+                    <option value="No phone service">Không dùng thoại</option>
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-xs text-zinc-400">Internet Service</label>
+                  <label className="mb-1.5 block text-xs text-zinc-400">Dịch vụ Internet</label>
                   <select
                     className={selectClass}
                     value={customer.InternetService}
@@ -388,9 +388,9 @@ export function SinglePredictor() {
                       updateField('InternetService', e.target.value as InternetServiceOption)
                     }
                   >
-                    <option value="Fiber optic">Fiber optic</option>
-                    <option value="DSL">DSL</option>
-                    <option value="No">No</option>
+                    <option value="Fiber optic">Cáp quang</option>
+                    <option value="DSL">Cáp đồng DSL</option>
+                    <option value="No">Không dùng</option>
                   </select>
                 </div>
               </div>
@@ -398,12 +398,12 @@ export function SinglePredictor() {
               <div className="mt-3 grid gap-3 sm:grid-cols-3">
                 {(
                   [
-                    ['OnlineSecurity', 'Online Security'],
-                    ['OnlineBackup', 'Online Backup'],
-                    ['DeviceProtection', 'Device Protection'],
-                    ['TechSupport', 'Tech Support'],
-                    ['StreamingTV', 'Streaming TV'],
-                    ['StreamingMovies', 'Streaming Movies'],
+                    ['OnlineSecurity', 'Bảo mật trực tuyến'],
+                    ['OnlineBackup', 'Sao lưu trực tuyến'],
+                    ['DeviceProtection', 'Bảo vệ thiết bị'],
+                    ['TechSupport', 'Hỗ trợ kỹ thuật'],
+                    ['StreamingTV', 'Truyền hình TV'],
+                    ['StreamingMovies', 'Xem phim trực tuyến'],
                   ] as const
                 ).map(([fieldKey, label]) => (
                   <div key={fieldKey}>
@@ -416,9 +416,9 @@ export function SinglePredictor() {
                         updateField(fieldKey, e.target.value as InternetAddonOption)
                       }
                     >
-                      <option value="No">No</option>
-                      <option value="Yes">Yes</option>
-                      <option value="No internet service">No internet service</option>
+                      <option value="No">Không</option>
+                      <option value="Yes">Có</option>
+                      <option value="No internet service">Không dùng Internet</option>
                     </select>
                   </div>
                 ))}
@@ -430,7 +430,7 @@ export function SinglePredictor() {
         <div className="space-y-5 lg:col-span-5">
           {error && (
             <div className="rounded-2xl border border-rose-500/30 bg-rose-950/30 p-4 text-sm text-rose-200">
-              Lỗi gọi API: {error}. Hãy đảm bảo FastAPI đang chạy ở cổng 8000.
+              Không thể kết nối máy chủ dự đoán: {error}. Vui lòng kiểm tra lại kết nối.
             </div>
           )}
 
@@ -496,19 +496,19 @@ export function SinglePredictor() {
           <div className="grid gap-6 lg:grid-cols-12">
             <div className="grid gap-3 sm:grid-cols-2 lg:col-span-7">
               <div>
-                <label className="mb-1.5 block text-xs text-zinc-400">Thử đổi Hợp đồng</label>
+                <label className="mb-1.5 block text-xs text-zinc-400">Thử đổi hợp đồng</label>
                 <select
                   className={selectClass}
                   value={simCustomer.Contract}
                   onChange={(e) => void updateSimulation('Contract', e.target.value as ContractOption)}
                 >
-                  <option value="Month-to-month">Month-to-month</option>
-                  <option value="One year">One year</option>
-                  <option value="Two year">Two year</option>
+                  <option value="Month-to-month">Theo tháng</option>
+                  <option value="One year">1 năm</option>
+                  <option value="Two year">2 năm</option>
                 </select>
               </div>
               <div>
-                <label className="mb-1.5 block text-xs text-zinc-400">Thử đổi Thanh toán</label>
+                <label className="mb-1.5 block text-xs text-zinc-400">Thử đổi thanh toán</label>
                 <select
                   className={selectClass}
                   value={simCustomer.PaymentMethod}
@@ -516,14 +516,14 @@ export function SinglePredictor() {
                     void updateSimulation('PaymentMethod', e.target.value as PaymentMethodOption)
                   }
                 >
-                  <option value="Electronic check">Electronic check</option>
-                  <option value="Mailed check">Mailed check</option>
-                  <option value="Bank transfer (automatic)">Bank transfer (auto)</option>
-                  <option value="Credit card (automatic)">Credit card (auto)</option>
+                  <option value="Electronic check">Ví / Séc điện tử</option>
+                  <option value="Mailed check">Séc bưu điện</option>
+                  <option value="Bank transfer (automatic)">Chuyển khoản tự động</option>
+                  <option value="Credit card (automatic)">Thẻ tín dụng tự động</option>
                 </select>
               </div>
               <div>
-                <label className="mb-1.5 block text-xs text-zinc-400">Tặng Tech Support</label>
+                <label className="mb-1.5 block text-xs text-zinc-400">Tặng hỗ trợ kỹ thuật</label>
                 <select
                   className={selectClass}
                   value={simCustomer.TechSupport}
@@ -532,13 +532,13 @@ export function SinglePredictor() {
                     void updateSimulation('TechSupport', e.target.value as InternetAddonOption)
                   }
                 >
-                  <option value="No">No</option>
-                  <option value="Yes">Yes</option>
-                  <option value="No internet service">No internet service</option>
+                  <option value="No">Không</option>
+                  <option value="Yes">Có</option>
+                  <option value="No internet service">Không dùng Internet</option>
                 </select>
               </div>
               <div>
-                <label className="mb-1.5 block text-xs text-zinc-400">Tặng Online Security</label>
+                <label className="mb-1.5 block text-xs text-zinc-400">Tặng bảo mật trực tuyến</label>
                 <select
                   className={selectClass}
                   value={simCustomer.OnlineSecurity}
@@ -547,9 +547,9 @@ export function SinglePredictor() {
                     void updateSimulation('OnlineSecurity', e.target.value as InternetAddonOption)
                   }
                 >
-                  <option value="No">No</option>
-                  <option value="Yes">Yes</option>
-                  <option value="No internet service">No internet service</option>
+                  <option value="No">Không</option>
+                  <option value="Yes">Có</option>
+                  <option value="No internet service">Không dùng Internet</option>
                 </select>
               </div>
               <div className="sm:col-span-2">

@@ -115,6 +115,12 @@ const PIE_COLORS = {
   Low: '#34d399',
 }
 
+const CONTRACT_LABELS: Record<string, string> = {
+  'Month-to-month': 'Theo tháng',
+  'One year': '1 năm',
+  'Two year': '2 năm',
+}
+
 export function BatchDashboard() {
   const [rows, setRows] = useState<BatchRow[]>([])
   const [riskFilter, setRiskFilter] = useState<'ALL' | 'High' | 'Medium' | 'Low'>('ALL')
@@ -226,7 +232,7 @@ export function BatchDashboard() {
         <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-[#131418]/60 py-16 text-center">
           <FileSpreadsheet className="h-9 w-9 text-zinc-500" strokeWidth={1.5} />
           <p className="mt-3 text-sm font-medium text-zinc-300">
-            Chưa có dữ liệu batch nào được phân tích
+            Chưa có danh sách khách hàng nào được phân tích
           </p>
           <p className="mt-1 text-xs text-zinc-500">
             Nhấn &ldquo;Chạy thử 16 khách hàng mẫu&rdquo; hoặc tải file CSV để xem phân bố rủi ro
@@ -355,7 +361,9 @@ export function BatchDashboard() {
                     {filteredRows.map((row) => (
                       <tr key={row.id} className="transition-colors duration-150 hover:bg-white/[0.03]">
                         <td className="px-3 py-2 font-mono text-zinc-300">{row.id}</td>
-                        <td className="px-3 py-2">{row.input.Contract}</td>
+                        <td className="px-3 py-2">
+                          {CONTRACT_LABELS[row.input.Contract] ?? row.input.Contract}
+                        </td>
                         <td className="px-3 py-2 text-right font-mono tabular-nums">
                           {row.input.tenure}
                         </td>

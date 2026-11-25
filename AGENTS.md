@@ -4,9 +4,9 @@
    - Không viết chú thích (comments `#` hoặc docstrings giải thích thừa thãi) trong code trừ khi thật sự bắt buộc về mặt cú pháp.
    - Code phải tự tường minh qua cách đặt tên biến, hàm và cấu trúc rõ ràng.
 
-2. **Quy trình Git:**
-   - Sau khi hoàn thành mỗi phần/module (dữ liệu, train mô hình, API, tests, docs), bắt buộc phải commit và push code lên GitHub ngay lập tức.
-   - Commit message rõ ràng theo chuẩn Conventional Commits (`feat:`, `fix:`, `docs:`, `test:`).
+2. **Quy trình Git (Bắt buộc tự động):**
+   - Sau khi hoàn thành và kiểm thử pass bất kỳ phần/module nào (dữ liệu, train mô hình, Backend API, Frontend UI, Notebooks, tests, docs), **bắt buộc phải tự động `git add`, `git commit` và `git push` lên GitHub ngay lập tức** mà không cần chờ người dùng nhắc lại.
+   - Commit message rõ ràng theo chuẩn Conventional Commits (`feat:`, `fix:`, `docs:`, `test:`, `chore:`).
 
 3. **Tiêu chuẩn ghi chép tài liệu (`docs/NOTES.md`):**
    - Chỉ ghi chép kiến thức chuyên sâu, cốt lõi: toán học, bản chất thuật toán Machine Learning, trade-offs kỹ thuật và kiến trúc hệ thống.

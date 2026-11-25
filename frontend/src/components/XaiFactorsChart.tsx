@@ -102,3 +102,4 @@ export function XaiFactorsChart({ factors }: XaiFactorsChartProps) {
     </div>
   )
 }
+

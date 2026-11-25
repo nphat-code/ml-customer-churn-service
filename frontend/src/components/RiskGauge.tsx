@@ -80,3 +80,4 @@ export function RiskGauge({ probability, riskLevel, prediction }: RiskGaugeProps
     </div>
   )
 }
+

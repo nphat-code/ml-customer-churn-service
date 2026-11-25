@@ -49,3 +49,4 @@ export function predictBatchCustomers(customers: CustomerInput[]): Promise<Batch
     body: JSON.stringify({ customers }),
   })
 }
+

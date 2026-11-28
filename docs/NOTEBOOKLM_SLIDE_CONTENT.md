@@ -29,12 +29,12 @@
 
 ---
 
-## Slide 3: Xử Lý Mất Cân Bằng Lớp & Lựa Chọn Độ Đo
+## Slide 3: Xử Lý Mất Cân Bằng Lớp & Lựa Chọn Chỉ Số Đánh Giá
 - **Thực trạng mất cân bằng lớp:** Lớp Churn chiếm ~26.5%, lớp Retain chiếm ~73.5% (tỷ lệ ~1:3).
 - **Giải pháp Cost-sensitive Learning:**
   - Điều chỉnh trọng số trực tiếp trong hàm mất mát: `scale_pos_weight ≈ 2.77` cho XGBoost và `class_weight="balanced"` cho Logistic Regression, Random Forest, LightGBM.
   - Mục đích: Phạt nặng hơn khi mô hình bỏ sót ca Churn.
-- **Tiêu chí chọn độ đo:**
+- **Chỉ số đánh giá ưu tiên:**
   - Ưu tiên **Recall** và **ROC-AUC** thay vì Accuracy, vì bỏ sót một khách hàng rời bỏ (False Negative) gây thiệt hại lớn hơn nhiều so với gửi nhầm ưu đãi giữ chân (False Positive).
 
 ---

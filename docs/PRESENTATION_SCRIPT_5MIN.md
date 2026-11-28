@@ -10,9 +10,9 @@
 
 ## 0:00 – 0:30 (30 giây) | Đặt vấn đề & Mục tiêu
 
-> *"Em chào thầy/cô, hôm nay em xin trình bày đồ án **Dự đoán khách hàng rời bỏ mạng viễn thông (Customer Churn Prediction)**.*
+> *"Em chào thầy/cô, hôm nay em xin trình bày đồ án **Dự đoán khách hàng rời bỏ dịch vụ viễn thông (Customer Churn Prediction)**.*
 >
-> *Đây là bài toán phân loại nhị phân trên tập dữ liệu Telco gồm 7,043 khách hàng. Trong ngành viễn thông, chi phí tìm kiếm một khách hàng mới cao gấp 5 đến 7 lần chi phí giữ chân khách hàng cũ. Vì vậy, mục tiêu của em không chỉ dừng lại ở việc huấn luyện mô hình trên Jupyter Notebook, mà đóng gói thành một hệ thống End-to-End hoàn chỉnh: có REST API, có giải thích mô hình XAI và giao diện web để nhân viên chăm sóc khách hàng sử dụng được ngay."*
+> *Đây là bài toán phân loại nhị phân trên tập dữ liệu Telco 7,043 khách hàng, nhằm phát hiện sớm nhóm có nguy cơ rời bỏ để CSKH giữ chân kịp thời. Ngoài việc huấn luyện và so sánh mô hình trên Notebook, em đã đóng gói thành dịch vụ REST API kèm giải thích XAI và giao diện web để sử dụng thực tế."*
 
 ---
 

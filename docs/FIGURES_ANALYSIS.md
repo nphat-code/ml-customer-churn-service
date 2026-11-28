@@ -1,6 +1,6 @@
 # 📊 Tổng Hợp & Phân Tích Biểu Đồ — Customer Churn Prediction
 
-Tài liệu này lưu trữ toàn bộ 5 biểu đồ được sinh ra từ [notebooks/customer_churn_experiments.ipynb](file:///c:/Study/HK1Nam3/ML/Project/notebooks/customer_churn_experiments.ipynb) kèm phân tích chi tiết cho từng biểu đồ.
+Tài liệu này lưu trữ toàn bộ 7 biểu đồ được sinh ra từ [notebooks/customer_churn_experiments.ipynb](file:///c:/Study/HK1Nam3/ML/Project/notebooks/customer_churn_experiments.ipynb) kèm phân tích chi tiết cho từng biểu đồ.
 
 ---
 
@@ -70,4 +70,34 @@ Tài liệu này lưu trữ toàn bộ 5 biểu đồ được sinh ra từ [not
   - `cat__Contract_Month-to-month` chiếm tỷ trọng áp đảo (~**52.5%**), khẳng định hợp đồng theo tháng là tín hiệu rủi ro số 1.
   - Tiếp theo là `cat__InternetService_Fiber optic` (~**9.9%**), `cat__OnlineSecurity_No` (~**4.6%**), `cat__TechSupport_No` (~**3.7%**) và `cat__InternetService_DSL` (~**3.0%**).
   - Kết quả này khớp hoàn toàn với EDA và làm cơ sở cho các luật khuyến nghị can thiệp trong `app/service.py` (khuyến khích nâng cấp hợp đồng dài hạn và bổ sung dịch vụ bảo mật/hỗ trợ kỹ thuật).
+
+---
+
+## 6. Biểu đồ SHAP Summary (Beeswarm) — Giải thích toàn cục (XGBoost)
+
+*(Hiển thị ở Phần 4.3 trong [notebooks/customer_churn_experiments.ipynb](file:///c:/Study/HK1Nam3/ML/Project/notebooks/customer_churn_experiments.ipynb))*
+
+### Phân tích:
+- **Ý nghĩa trục & màu sắc:** Trục hoành biểu diễn giá trị SHAP (mức đóng góp theo log-odds: `> 0` đẩy xác suất Churn tăng, `< 0` kéo xác suất Churn giảm); màu đỏ là giá trị đặc trưng cao/`1`, màu xanh là giá trị thấp/`0`.
+- **Top đặc trưng tác động mạnh nhất (theo trung bình `|SHAP|`):**
+  1. `Contract_Month-to-month` (`0.7642`): Khi bằng `1` (đỏ), các điểm dồn hẳn sang phải làm tăng mạnh rủi ro rời bỏ; khi bằng `0` (xanh), kéo rủi ro giảm sâu.
+  2. `tenure` (`0.4496`): Khách hàng mới (`tenure` thấp — màu xanh) tập trung ở vùng SHAP dương, còn khách gắn bó lâu (`tenure` cao — màu đỏ) nằm ở vùng SHAP âm giúp giữ chân.
+  3. `MonthlyCharges` (`0.2679`): Cước tháng cao (đỏ) đẩy nguy cơ rời bỏ tăng lên.
+  4. Nhóm dịch vụ & thanh toán: `OnlineSecurity_No` (`0.2550`), `InternetService_Fiber optic` (`0.1792`), `PaymentMethod_Electronic check` (`0.1759`) và `TechSupport_No` (`0.1752`) đều có xu hướng đẩy xác suất Churn tăng khi mang giá trị `1`.
+
+---
+
+## 7. Biểu đồ SHAP Waterfall — Giải thích cục bộ (Index 1090)
+
+*(Hiển thị ở Phần 4.3 trong [notebooks/customer_churn_experiments.ipynb](file:///c:/Study/HK1Nam3/ML/Project/notebooks/customer_churn_experiments.ipynb))*
+
+### Phân tích:
+- **Đối tượng phân tích:** Khách hàng có xác suất Churn cao nhất trên tập Test (`index=1090`), mô hình dự đoán **97.00%** và nhãn thực tế là **Churn (`1`)**.
+- **Diễn giải từng lực đẩy từ giá trị cơ sở ($E[f(x)] = -0.0027$ log-odds):**
+  - `tenure = 1` tháng (`+0.9212`): Khách hàng mới dùng tháng đầu tiên là yếu tố đẩy rủi ro mạnh nhất.
+  - `Contract_Month-to-month = 1` (`+0.6986`): Hợp đồng theo tháng, chưa có ràng buộc dài hạn.
+  - `MonthlyCharges = 95.10 USD` (`+0.3614`) và `TotalCharges = 95.10 USD` (`+0.2164`): Cước phí tháng đầu cao.
+  - Thiếu `OnlineSecurity` (`+0.2044`), thiếu `TechSupport` (`+0.1913`), thanh toán `Electronic check` (`+0.1579`) và dùng `Fiber optic` (`+0.1460`).
+- **Giá trị ứng dụng:** Thay vì chỉ đưa ra con số `97.00%`, biểu đồ Waterfall chứng minh rõ lý do cụ thể cho từng khách hàng — đây chính là cơ sở khoa học cho biểu đồ yếu tố ảnh hưởng và gợi ý giữ chân trên Backend API (`app/service.py`).
+
 

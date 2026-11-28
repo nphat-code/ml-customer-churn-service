@@ -72,10 +72,3 @@
     3. Phân tích hàng loạt qua **CSV** (thống kê tổng doanh thu tháng có nguy cơ thất thoát, lọc nhóm rủi ro cao, xuất file CSV).
 - **Kiểm thử & Triển khai:** Tự động kiểm thử API với `pytest` (6/6 passed), CI qua GitHub Actions, đóng gói Docker Compose và đã triển khai bản chạy thực tế (Backend trên Render, Frontend trên Vercel).
 
----
-
-## Prompt Gợi Ý Khi Dùng Với NotebookLM
-Copy đoạn prompt này dán vào NotebookLM sau khi tải tài liệu trên làm Source:
-
-> *"Hãy thiết kế dàn ý slide thuyết trình đồ án Machine Learning gồm đúng 6 slide cho bài trình bày 5 phút bằng tiếng Việt, dựa trên tài liệu nguồn. Giữ nội dung súc tích dạng bullet points (mỗi slide tối đa 4 ý ngắn), làm nổi bật các con số quan trọng (7,043 mẫu, 11 dòng TotalCharges=0, Stratified 80/20, Recall 80.21%, ROC-AUC 0.8435 của XGBoost, TreeSHAP) và đề xuất bố cục trực quan/biểu đồ cho từng slide."*
-

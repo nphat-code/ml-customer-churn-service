@@ -28,7 +28,7 @@
 
 ## Slide 3: Xử lý mất cân bằng lớp & Lựa chọn độ đo *(~35 giây)*
 
-> *"Tập dữ liệu bị mất cân bằng với khoảng 26.5% khách hàng rời bỏ. Để xử lý, em dùng Cost-sensitive Learning (`scale_pos_weight ≈ 2.77` cho XGBoost và `class_weight='balanced'` cho các mô hình còn lại) nhằm phạt nặng hơn khi bỏ sót nhóm Churn mà vẫn giữ nguyên phân phối dữ liệu thật.*
+> *"Tập dữ liệu bị mất cân bằng với khoảng 26.5% khách hàng rời bỏ. Để xử lý, em dùng Cost-sensitive Learning (`scale_pos_weight ≈ 2.77` cho XGBoost và `class_weight='balanced'` cho các mô hình còn lại) nhằm phạt nặng hơn khi bỏ sót nhóm Churn.*
 >
 > *Về độ đo, vì bỏ sót một khách rời bỏ gây thiệt hại lớn hơn nhiều so với gửi nhầm ưu đãi giữ chân, em ưu tiên **Recall** và **ROC-AUC** thay vì Accuracy."*
 

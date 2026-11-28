@@ -2,12 +2,9 @@ import { useEffect, useState } from 'react'
 import {
   Activity,
   ArrowLeft,
-  ArrowRight,
   CheckCircle2,
   Loader2,
-  RotateCcw,
   ShieldAlert,
-  SlidersHorizontal,
   UserCheck,
 } from 'lucide-react'
 import type { InspectedCustomer } from '../App'
@@ -31,12 +28,6 @@ const DEFAULT_CUSTOMER = CUSTOMER_PRESETS[0].data
 const selectClass =
   'w-full rounded-lg border border-white/10 bg-[#0d0e11] px-3 py-2 text-sm text-zinc-100 focus:border-sky-400 focus:outline-none focus:ring-1 focus:ring-sky-400'
 
-const RISK_LABELS = {
-  High: 'Rủi ro cao',
-  Medium: 'Rủi ro trung bình',
-  Low: 'Rủi ro thấp',
-}
-
 interface SinglePredictorProps {
   inspectedCustomer?: InspectedCustomer | null
   onClearInspected?: () => void
@@ -54,18 +45,12 @@ export function SinglePredictor({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const [simCustomer, setSimCustomer] = useState<CustomerInput>(DEFAULT_CUSTOMER)
-  const [simPrediction, setSimPrediction] = useState<ChurnPredictionResponse | null>(null)
-  const [simLoading, setSimLoading] = useState(false)
-
   async function runPrediction(payload: CustomerInput) {
     setLoading(true)
     setError(null)
     try {
       const result = await predictSingleCustomer(payload)
       setPrediction(result)
-      setSimCustomer(payload)
-      setSimPrediction(result)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Không thể kết nối tới API')
     } finally {
@@ -129,33 +114,6 @@ export function SinglePredictor({
       return next
     })
   }
-
-  async function updateSimulation<K extends keyof CustomerInput>(
-    key: K,
-    value: CustomerInput[K],
-  ) {
-    const nextSim = { ...simCustomer, [key]: value }
-    if (key === 'tenure' || key === 'MonthlyCharges') {
-      const t = key === 'tenure' ? Number(value) : simCustomer.tenure
-      const m = key === 'MonthlyCharges' ? Number(value) : simCustomer.MonthlyCharges
-      nextSim.TotalCharges = Math.round(t * m * 100) / 100
-    }
-    setSimCustomer(nextSim)
-    setSimLoading(true)
-    try {
-      const result = await predictSingleCustomer(nextSim)
-      setSimPrediction(result)
-    } catch {
-      setSimPrediction(null)
-    } finally {
-      setSimLoading(false)
-    }
-  }
-
-  const baseProb = prediction?.churn_probability ?? 0
-  const simProb = simPrediction?.churn_probability ?? baseProb
-  const deltaPercent = ((simProb - baseProb) * 100).toFixed(1)
-  const deltaNum = Number(deltaPercent)
 
   return (
     <div className="space-y-6">
@@ -500,159 +458,6 @@ export function SinglePredictor({
           )}
         </div>
       </div>
-
-      {prediction && (
-        <div className="rounded-2xl border border-white/8 bg-[#131418] p-5">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-white/8 pb-3">
-            <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-[#1a1c22] text-zinc-200">
-                <SlidersHorizontal className="h-4 w-4" strokeWidth={1.5} />
-              </div>
-              <div>
-                <h3 className="text-sm font-semibold text-zinc-100">
-                  Mô phỏng kịch bản giữ chân
-                </h3>
-                <p className="text-xs text-zinc-400">
-                  Điều chỉnh hợp đồng, dịch vụ hỗ trợ hoặc mức cước để kiểm tra mức giảm rủi ro theo thời gian thực.
-                </p>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                setSimCustomer(customer)
-                setSimPrediction(prediction)
-              }}
-              className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-[#0d0e11] px-3 py-1.5 text-xs font-medium text-zinc-300 transition-colors duration-150 hover:border-white/20 hover:text-zinc-100"
-            >
-              <RotateCcw className="h-3.5 w-3.5" strokeWidth={1.5} />
-              Đặt lại theo gốc
-            </button>
-          </div>
-
-          <div className="grid gap-6 lg:grid-cols-12">
-            <div className="grid gap-3 sm:grid-cols-2 lg:col-span-7">
-              <div>
-                <label className="mb-1.5 block text-xs text-zinc-400">Thử đổi hợp đồng</label>
-                <select
-                  className={selectClass}
-                  value={simCustomer.Contract}
-                  onChange={(e) => void updateSimulation('Contract', e.target.value as ContractOption)}
-                >
-                  <option value="Month-to-month">Theo tháng</option>
-                  <option value="One year">1 năm</option>
-                  <option value="Two year">2 năm</option>
-                </select>
-              </div>
-              <div>
-                <label className="mb-1.5 block text-xs text-zinc-400">Thử đổi thanh toán</label>
-                <select
-                  className={selectClass}
-                  value={simCustomer.PaymentMethod}
-                  onChange={(e) =>
-                    void updateSimulation('PaymentMethod', e.target.value as PaymentMethodOption)
-                  }
-                >
-                  <option value="Electronic check">Ví / Séc điện tử</option>
-                  <option value="Mailed check">Séc bưu điện</option>
-                  <option value="Bank transfer (automatic)">Chuyển khoản tự động</option>
-                  <option value="Credit card (automatic)">Thẻ tín dụng tự động</option>
-                </select>
-              </div>
-              <div>
-                <label className="mb-1.5 block text-xs text-zinc-400">Tặng hỗ trợ kỹ thuật</label>
-                <select
-                  className={selectClass}
-                  value={simCustomer.TechSupport}
-                  disabled={simCustomer.InternetService === 'No'}
-                  onChange={(e) =>
-                    void updateSimulation('TechSupport', e.target.value as InternetAddonOption)
-                  }
-                >
-                  <option value="No">Không</option>
-                  <option value="Yes">Có</option>
-                  <option value="No internet service">Không dùng Internet</option>
-                </select>
-              </div>
-              <div>
-                <label className="mb-1.5 block text-xs text-zinc-400">Tặng bảo mật trực tuyến</label>
-                <select
-                  className={selectClass}
-                  value={simCustomer.OnlineSecurity}
-                  disabled={simCustomer.InternetService === 'No'}
-                  onChange={(e) =>
-                    void updateSimulation('OnlineSecurity', e.target.value as InternetAddonOption)
-                  }
-                >
-                  <option value="No">Không</option>
-                  <option value="Yes">Có</option>
-                  <option value="No internet service">Không dùng Internet</option>
-                </select>
-              </div>
-              <div className="sm:col-span-2">
-                <label className="mb-1.5 block text-xs text-zinc-400">
-                  Điều chỉnh cước tháng:{' '}
-                  <span className="font-mono font-medium text-zinc-100 tabular-nums">
-                    ${simCustomer.MonthlyCharges.toFixed(1)}
-                  </span>
-                </label>
-                <input
-                  type="range"
-                  min={18}
-                  max={120}
-                  step={0.5}
-                  value={simCustomer.MonthlyCharges}
-                  onChange={(e) =>
-                    void updateSimulation('MonthlyCharges', Number(e.target.value))
-                  }
-                  className="w-full accent-sky-400"
-                />
-              </div>
-            </div>
-
-            <div className="flex flex-col justify-center rounded-xl border border-white/8 bg-[#0d0e11] p-5 lg:col-span-5">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <div className="text-xs text-zinc-400">Hiện tại</div>
-                  <div className="mt-1 text-2xl font-semibold text-zinc-300 tabular-nums">
-                    {(baseProb * 100).toFixed(1)}%
-                  </div>
-                </div>
-                <ArrowRight className="h-4 w-4 text-zinc-500" strokeWidth={1.5} />
-                <div>
-                  <div className="text-xs text-zinc-400">Sau can thiệp</div>
-                  <div className="mt-1 text-2xl font-semibold text-zinc-100 tabular-nums">
-                    {simLoading ? '...' : `${(simProb * 100).toFixed(1)}%`}
-                  </div>
-                </div>
-                <div
-                  className={`rounded-lg border px-3 py-1.5 font-mono text-sm font-semibold tabular-nums ${
-                    deltaNum < 0
-                      ? 'border-emerald-500/25 bg-emerald-500/10 text-emerald-300'
-                      : deltaNum > 0
-                        ? 'border-rose-500/25 bg-rose-500/10 text-rose-300'
-                        : 'border-white/10 bg-[#16181d] text-zinc-300'
-                  }`}
-                >
-                  {deltaNum > 0 ? `+${deltaPercent}%` : `${deltaPercent}%`}
-                </div>
-              </div>
-              {simPrediction && (
-                <p className="mt-3 text-xs text-zinc-400">
-                  Mức độ sau mô phỏng:{' '}
-                  <span className="font-medium text-zinc-200">
-                    {RISK_LABELS[simPrediction.risk_level]}
-                  </span>{' '}
-                  ·{' '}
-                  {simPrediction.churn_prediction === 'Churn'
-                    ? 'Vẫn cần chăm sóc'
-                    : 'Ổn định'}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

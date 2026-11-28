@@ -75,7 +75,7 @@ Tài liệu này lưu trữ toàn bộ 7 biểu đồ được sinh ra từ [not
 
 ## 6. Biểu đồ SHAP Summary (Beeswarm) — Giải thích toàn cục (XGBoost)
 
-*(Hiển thị ở Phần 4.3 trong [notebooks/customer_churn_experiments.ipynb](file:///c:/Study/HK1Nam3/ML/Project/notebooks/customer_churn_experiments.ipynb))*
+![SHAP Summary Beeswarm XGBoost](images/06_shap_beeswarm.png)
 
 ### Phân tích:
 - **Ý nghĩa trục & màu sắc:** Trục hoành biểu diễn giá trị SHAP (mức đóng góp theo log-odds: `> 0` đẩy xác suất Churn tăng, `< 0` kéo xác suất Churn giảm); màu đỏ là giá trị đặc trưng cao/`1`, màu xanh là giá trị thấp/`0`.
@@ -89,7 +89,7 @@ Tài liệu này lưu trữ toàn bộ 7 biểu đồ được sinh ra từ [not
 
 ## 7. Biểu đồ SHAP Waterfall — Giải thích cục bộ (Index 1090)
 
-*(Hiển thị ở Phần 4.3 trong [notebooks/customer_churn_experiments.ipynb](file:///c:/Study/HK1Nam3/ML/Project/notebooks/customer_churn_experiments.ipynb))*
+![SHAP Waterfall Index 1090](images/07_shap_waterfall.png)
 
 ### Phân tích:
 - **Đối tượng phân tích:** Khách hàng có xác suất Churn cao nhất trên tập Test (`index=1090`), mô hình dự đoán **97.00%** và nhãn thực tế là **Churn (`1`)**.

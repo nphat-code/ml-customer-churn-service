@@ -6,13 +6,6 @@
 
 ---
 
-## Thông Tin Chung
-- **Tên đề tài:** Hệ thống Dự đoán Khách hàng Rời bỏ Dịch vụ Viễn thông (Customer Churn Prediction Service)
-- **Môn học:** Machine Learning (Học máy) — HK1 Năm 3
-- **Mục tiêu:** Xây dựng mô hình phân loại nhị phân phát hiện sớm khách hàng có nguy cơ rời bỏ (Churn) và đóng gói thành hệ thống End-to-End (REST API + Giải thích mô hình XAI + Giao diện Web cho nhân viên CSKH).
-
----
-
 ## Slide 1: Giới Thiệu Đề Tài & Định Nghĩa Bài Toán
 - **Bối cảnh:** Doanh nghiệp viễn thông cần phát hiện sớm khách hàng có nguy cơ hủy dịch vụ để nhân viên CSKH chủ động giữ chân kịp thời.
 - **Định nghĩa bài toán Machine Learning:**
@@ -85,3 +78,4 @@
 Copy đoạn prompt này dán vào NotebookLM sau khi tải tài liệu trên làm Source:
 
 > *"Hãy thiết kế dàn ý slide thuyết trình đồ án Machine Learning gồm đúng 6 slide cho bài trình bày 5 phút bằng tiếng Việt, dựa trên tài liệu nguồn. Giữ nội dung súc tích dạng bullet points (mỗi slide tối đa 4 ý ngắn), làm nổi bật các con số quan trọng (7,043 mẫu, 11 dòng TotalCharges=0, Stratified 80/20, Recall 80.21%, ROC-AUC 0.8435 của XGBoost, TreeSHAP) và đề xuất bố cục trực quan/biểu đồ cho từng slide."*
+

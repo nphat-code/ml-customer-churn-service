@@ -34,7 +34,7 @@
 
 *(Mở nhanh biểu đồ `04_roc_curves_comparison.png`, `05_confusion_matrix_feature_importance.png` và Phần 4.3 TreeSHAP ở cuối Notebook)*
 
-> *"Tập dữ liệu bị mất cân bằng lớp với khoảng 26.5% khách hàng rời bỏ. Thay vì dùng SMOTE — vốn dễ sinh điểm nhiễu khi phần lớn thuộc tính là biến phân loại sau One-Hot — em dùng Cost-sensitive Learning (`scale_pos_weight ≈ 2.76` cho XGBoost và `class_weight='balanced'` cho các mô hình còn lại) để phạt nặng hơn khi mô hình bỏ sót nhóm Churn.*
+> *"Tập dữ liệu bị mất cân bằng lớp với khoảng 26.5% khách hàng rời bỏ. Để xử lý, em dùng Cost-sensitive Learning (`scale_pos_weight ≈ 2.76` cho XGBoost và `class_weight='balanced'` cho các mô hình còn lại) nhằm phạt nặng hơn khi mô hình bỏ sót nhóm Churn mà vẫn giữ nguyên phân phối dữ liệu thật.*
 >
 > *Về độ đo, vì bỏ sót một khách rời bỏ gây thiệt hại doanh thu lớn hơn nhiều so với gửi nhầm một ưu đãi giữ chân, em ưu tiên **Recall** và **ROC-AUC** thay vì Accuracy. Khi benchmark 4 thuật toán (Logistic Regression, Random Forest, LightGBM và XGBoost), **XGBoost** cho kết quả tốt nhất với **Recall đạt 80.21%** — bắt đúng 300 trên 374 khách hàng rời bỏ ở tập kiểm thử — và **ROC-AUC đạt 0.8435**.*
 >
@@ -59,3 +59,4 @@
 ## 4:45 – 5:00 (15 giây) | Chốt tổng kết
 
 > *"Toàn bộ hệ thống đã được viết test tự động bằng `pytest`, kiểm tra qua GitHub Actions CI và đóng gói chạy đồng thời Backend–Frontend bằng Docker Compose. Em xin kết thúc phần trình bày tại đây và rất mong nhận được câu hỏi góp ý từ thầy/cô ạ."*
+

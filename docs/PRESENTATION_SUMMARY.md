@@ -56,3 +56,4 @@ Với đồ án môn **Machine Learning**, nên dành **~70% thời lượng cho
 - Nhắc ngắn gọn việc đã viết test tự động (`pytest`), cấu hình GitHub Actions CI và Docker Compose.
 
 *(Chi tiết kịch bản từng slide và bộ câu hỏi vấn đáp xem tại [PRESENTATION_NOTES.md](PRESENTATION_NOTES.md).)*
+

@@ -63,12 +63,11 @@
 
 ---
 
-## Slide 6: Kiến Trúc Hệ Thống & Ứng Dụng Thực Tế (ChurnGuard)
-- **Kiến trúc End-to-End:**
-  - **Backend (`FastAPI` + `Pydantic V2`):** Nạp pipeline `.joblib`, phân tầng rủi ro (**Thấp < 35%**, **Trung bình 35–65%**, **Cao ≥ 65%**), trả về yếu tố SHAP và sinh khuyến nghị giữ chân tự động.
-  - **Frontend (`React` + `TypeScript` + `Tailwind CSS`):** Giao diện tiếng Việt hướng người dùng cuối (CSKH), gồm 3 tính năng chính:
-    1. Dự đoán đơn lẻ kèm hồ sơ mẫu 1-click & biểu đồ yếu tố ảnh hưởng.
-    2. Mô phỏng kịch bản **What-If** theo thời gian thực (thử đổi hợp đồng/dịch vụ để thấy xác suất rời bỏ giảm).
-    3. Phân tích hàng loạt qua **CSV** (thống kê tổng doanh thu tháng có nguy cơ thất thoát, lọc nhóm rủi ro cao, xuất file CSV).
-- **Kiểm thử & Triển khai:** Tự động kiểm thử API với `pytest` (6/6 passed), CI qua GitHub Actions, đóng gói Docker Compose và đã triển khai bản chạy thực tế (Backend trên Render, Frontend trên Vercel).
+## Slide 6: Kiến Trúc REST API (Input & Output) & Triển Khai
+- **API Endpoints (`FastAPI` + `Pydantic V2`):** `GET /health`, `POST /api/v1/predict` (đơn lẻ) và `POST /api/v1/predict/batch` (hàng loạt), tích hợp Swagger UI (`/docs`).
+- **Input (Request JSON):** 19 đặc trưng khách hàng, tự động validate kiểu dữ liệu, giá trị hợp lệ và chặn số âm (`422` nếu sai định dạng).
+- **Output (Response JSON):**
+  - `churn_prediction` (`Churn`/`Retain`), `churn_probability` (`0.0–1.0`), `risk_level` (**Low < 0.35**, **Medium 0.35–0.65**, **High ≥ 0.65**).
+  - `top_factors` (Top 6 yếu tố TreeSHAP + chiều `increase`/`decrease`), `recommendation` (gợi ý giữ chân theo luật nghiệp vụ) và `model_version`.
+- **Kiểm thử & Triển khai:** Kiểm thử tự động bằng `pytest` (6/6 passed), CI qua GitHub Actions, đóng gói Docker và deploy trên Render.
 

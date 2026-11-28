@@ -1,7 +1,7 @@
 # Kịch Bản Lời Nói Theo Từng Slide (5 Phút)
 
 > **Chuẩn bị trước khi trình bày:**
-> - Mở sẵn link web Vercel (`https://ml-customer-churn-service.vercel.app`) trước 1–2 phút để Backend Render thức dậy.
+> - Mở sẵn Swagger UI của Backend (`/docs`) hoặc Thunder Client để gửi request API trực tiếp.
 > - Mở sẵn bộ 6 slide (khớp với [NOTEBOOKLM_SLIDE_CONTENT.md](NOTEBOOKLM_SLIDE_CONTENT.md)).
 
 ---
@@ -52,13 +52,12 @@
 
 ---
 
-## Slide 6: Kiến trúc hệ thống & Demo ứng dụng thực tế *(~1 phút 45 giây — kết hợp demo)*
+## Slide 6: Kiến trúc REST API & Demo Input / Output *(~1 phút 45 giây — kết hợp test API)*
 
-> *"Cuối cùng, em triển khai mô hình thành hệ thống End-to-End gồm Backend **FastAPI** và giao diện **React** cho nhân viên CSKH (đã deploy lên Render và Vercel).*
+> *"Cuối cùng, em đóng gói mô hình thành dịch vụ **REST API** bằng **FastAPI** và **Pydantic V2**, hỗ trợ hai endpoint chính là dự đoán đơn lẻ (`POST /api/v1/predict`) và dự đoán hàng loạt (`POST /api/v1/predict/batch`).*
 >
-> *(Chuyển sang màn hình web demo):*
-> - *Khi chọn 1 hồ sơ khách hàng, hệ thống trả về ngay xác suất rời bỏ, phân tầng rủi ro, biểu đồ các yếu tố SHAP và gợi ý giữ chân tự động bằng tiếng Việt.*
-> - *Ở phần mô phỏng What-If, khi thử chuyển khách từ hợp đồng theo tháng sang 1 năm hoặc tặng hỗ trợ kỹ thuật, xác suất rời bỏ giảm ngay theo thời gian thực.*
-> - *Với quản lý, tab Phân tích hàng loạt cho phép tải file CSV để thống kê tổng doanh thu có nguy cơ thất thoát, lọc nhóm rủi ro cao và xuất danh sách ưu tiên.*
+> *(Mở Swagger UI `/docs` hoặc Thunder Client và bấm gửi 1 request mẫu):*
+> - *Về **Input**, API nhận vào JSON gồm 19 thuộc tính của khách hàng như thời gian gắn bó (`tenure`), loại hợp đồng (`Contract`), phương thức thanh toán, cước phí... Toàn bộ được Pydantic kiểm tra chặt kiểu dữ liệu và chặn giá trị sai ngay ở tầng đầu vào.*
+> - *Về **Output**, hệ thống chạy qua pipeline đã đóng băng và trả về kết quả JSON gồm: nhãn dự đoán (`Churn`/`Retain`), xác suất rời bỏ (`churn_probability`), mức độ rủi ro phân tầng (`Low`/`Medium`/`High`), mảng `top_factors` gồm 6 yếu tố tác động mạnh nhất từ TreeSHAP kèm chiều tăng/giảm, và `recommendation` là gợi ý giữ chân tự động.*
 >
-> *Toàn bộ dự án đã có kiểm thử tự động bằng `pytest` (6/6 passed), CI trên GitHub Actions và đóng gói Docker Compose. Em xin kết thúc phần trình bày và rất mong nhận được góp ý từ thầy/cô ạ."*
+> *Toàn bộ API đã được kiểm thử tự động bằng `pytest` (6/6 passed), kiểm tra qua GitHub Actions CI và đóng gói chạy bằng Docker. Em xin kết thúc phần trình bày và rất mong nhận được góp ý từ thầy/cô ạ."*

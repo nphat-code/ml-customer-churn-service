@@ -1,14 +1,12 @@
-# Kịch Bản Trình Bày Bằng Lời (5 Phút)
+# Kịch Bản Lời Nói Theo Từng Slide (5 Phút)
 
-> **Lưu ý chuẩn bị trước khi lên trình bày:**
-> - Bật sẵn Backend (`py -3.10 -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000`) và Frontend (`cd frontend; npm run dev`).
-> - Mở sẵn 2 tab trên trình duyệt/màn hình:
->   1. Notebook [customer_churn_experiments.ipynb](../notebooks/customer_churn_experiments.ipynb) (hoặc thư mục `docs/images/`).
->   2. Giao diện Demo tại `http://localhost:5173`.
+> **Chuẩn bị trước khi trình bày:**
+> - Mở sẵn link web Vercel (`https://ml-customer-churn-service.vercel.app`) trước 1–2 phút để Backend Render thức dậy.
+> - Mở sẵn bộ 6 slide (khớp với [NOTEBOOKLM_SLIDE_CONTENT.md](NOTEBOOKLM_SLIDE_CONTENT.md)).
 
 ---
 
-## 0:00 – 0:30 (30 giây) | Đặt vấn đề & Mục tiêu
+## Slide 1: Giới thiệu đề tài & Định nghĩa bài toán *(~30 giây)*
 
 > *"Em chào thầy/cô, hôm nay em xin trình bày đồ án **Dự đoán khách hàng rời bỏ dịch vụ viễn thông (Customer Churn Prediction)**.*
 >
@@ -16,47 +14,51 @@
 
 ---
 
-## 0:30 – 1:45 (1 phút 15 giây) | Dữ liệu & Chống Data Leakage
+## Slide 2: Khám phá dữ liệu & Tiền xử lý chống Data Leakage *(~50 giây)*
 
-*(Mở nhanh Notebook Phần 1 & 2 hoặc các biểu đồ `01`, `02`, `03` trong `docs/images/`)*
-
-> *"Về phần dữ liệu và tiền xử lý, em xử lý 3 vấn đề chính của tập dữ liệu gốc:*
+> *"Về dữ liệu và tiền xử lý, em giải quyết 3 vấn đề chính:*
 >
-> *Thứ nhất, cột `TotalCharges` có 11 dòng chứa chuỗi rỗng. Qua kiểm tra, cả 11 dòng này đều ứng với khách hàng mới có `tenure = 0`, chưa phát sinh kỳ thanh toán tích lũy. Thay vì xóa bỏ, em ép kiểu số và điền `0.0` để bảo toàn đủ 7,043 mẫu và khớp với dữ liệu khách mới ngoài thực tế.*
+> *Thứ nhất, cột `TotalCharges` có 11 dòng chứa chuỗi rỗng — thực chất là khách hàng mới (`tenure = 0`), chưa phát sinh hóa đơn tích lũy, nên em không xóa mà điền `0.0` để giữ đủ 7,043 mẫu.*
 >
-> *Thứ hai, với 16 biến phân loại, em dùng `OneHotEncoder` để tránh áp đặt thứ tự toán học giả lên các biến định danh như loại hợp đồng hay phương thức thanh toán; còn 3 biến số (`tenure`, `MonthlyCharges`, `TotalCharges`) được đưa qua `StandardScaler` để đồng bộ thang đo.*
+> *Thứ hai, 16 biến phân loại được mã hóa bằng `OneHotEncoder` thành 43 cột nhị phân để tránh áp đặt thứ tự giả, còn 3 biến số được chuẩn hóa bằng `StandardScaler` để đồng bộ thang đo.*
 >
-> *Thứ ba, để chống rò rỉ dữ liệu (Data Leakage), em đóng gói toàn bộ bước tiền xử lý vào `ColumnTransformer` và `Pipeline` của `scikit-learn`. Pipeline chỉ `.fit()` trên tập Train 80% rồi đóng băng thành file `.joblib` để phục vụ dự đoán."*
+> *Thứ ba, em chia dữ liệu Stratified 80/20 và đóng gói toàn bộ bước biến đổi vào `ColumnTransformer` + `Pipeline`, chỉ `.fit()` trên tập Train rồi đóng băng thành file `.joblib` để chống Data Leakage."*
 
 ---
 
-## 1:45 – 3:15 (1 phút 30 giây) | Xử lý lệch lớp, Benchmark & TreeSHAP
+## Slide 3: Xử lý mất cân bằng lớp & Lựa chọn độ đo *(~35 giây)*
 
-*(Mở nhanh biểu đồ `04_roc_curves_comparison.png`, `05_confusion_matrix_feature_importance.png` và Phần 4.3 TreeSHAP ở cuối Notebook)*
-
-> *"Tập dữ liệu bị mất cân bằng lớp với khoảng 26.5% khách hàng rời bỏ. Để xử lý, em dùng Cost-sensitive Learning (`scale_pos_weight ≈ 2.76` cho XGBoost và `class_weight='balanced'` cho các mô hình còn lại) nhằm phạt nặng hơn khi mô hình bỏ sót nhóm Churn mà vẫn giữ nguyên phân phối dữ liệu thật.*
+> *"Tập dữ liệu bị mất cân bằng với khoảng 26.5% khách hàng rời bỏ. Để xử lý, em dùng Cost-sensitive Learning (`scale_pos_weight ≈ 2.77` cho XGBoost và `class_weight='balanced'` cho các mô hình còn lại) nhằm phạt nặng hơn khi bỏ sót nhóm Churn mà vẫn giữ nguyên phân phối dữ liệu thật.*
 >
-> *Về độ đo, vì bỏ sót một khách rời bỏ gây thiệt hại doanh thu lớn hơn nhiều so với gửi nhầm một ưu đãi giữ chân, em ưu tiên **Recall** và **ROC-AUC** thay vì Accuracy. Khi benchmark 4 thuật toán (Logistic Regression, Random Forest, LightGBM và XGBoost), **XGBoost** cho kết quả tốt nhất với **Recall đạt 80.21%** — bắt đúng 300 trên 374 khách hàng rời bỏ ở tập kiểm thử — và **ROC-AUC đạt 0.8435**.*
->
-> *Ngoài Feature Importance tổng thể, em tích hợp thêm **TreeSHAP** (biểu đồ Beeswarm và Waterfall) để giải thích minh bạch yếu tố nào đang đẩy rủi ro rời bỏ của từng khách hàng lên cao — ví dụ hợp đồng theo tháng, thời gian gắn bó ngắn, hay thanh toán qua Electronic check."*
+> *Về độ đo, vì bỏ sót một khách rời bỏ gây thiệt hại lớn hơn nhiều so với gửi nhầm ưu đãi giữ chân, em ưu tiên **Recall** và **ROC-AUC** thay vì Accuracy."*
 
 ---
 
-## 3:15 – 4:45 (1 phút 30 giây) | Demo trực tiếp hệ thống End-to-End
+## Slide 4: Kết quả Benchmark 4 mô hình & Chọn mô hình tối ưu *(~40 giây)*
 
-*(Chuyển sang tab trình duyệt `http://localhost:5173`)*
-
-> *"Bây giờ em xin demo nhanh hệ thống thực tế:*
+> *"Em thử nghiệm 4 thuật toán trên cùng tập kiểm thử gồm 1,409 mẫu: Logistic Regression, Random Forest, LightGBM và XGBoost.*
 >
-> *(1. Bấm chọn 1 hồ sơ mẫu rủi ro cao)* — *Khi nhân viên CSKH chọn hoặc nhập thông tin một khách hàng, hệ thống gọi FastAPI và trả về ngay xác suất rời bỏ, phân tầng rủi ro, biểu đồ các yếu tố tác động chính từ TreeSHAP, cùng gợi ý giữ chân tự động bằng tiếng Việt nghiệp vụ.*
->
-> *(2. Ở phần mô phỏng What-If, đổi Hợp đồng từ Theo tháng sang 1 năm hoặc bật Hỗ trợ kỹ thuật)* — *Nhân viên CSKH cũng có thể mô phỏng kịch bản can thiệp: khi thử chuyển khách hàng sang hợp đồng 1 năm và tặng hỗ trợ kỹ thuật, thầy/cô có thể thấy xác suất rời bỏ giảm ngay theo thời gian thực.*
->
-> *(3. Chuyển sang tab Phân tích hàng loạt, chạy dữ liệu CSV mẫu)* — *Với quản lý kinh doanh, hệ thống hỗ trợ tải lên file CSV danh sách nhiều khách hàng cùng lúc, tính tổng doanh thu tháng có nguy cơ thất thoát, lọc nhanh nhóm rủi ro cao và xuất ra file CSV ưu tiên cho đội CSKH chăm sóc."*
+> *Kết quả cho thấy **XGBoost** vượt trội nhất với **ROC-AUC đạt 0.8435** và **Recall đạt 80.21%** — tức phát hiện đúng **300 trên 374** khách hàng thực tế rời bỏ, chỉ bỏ sót 74 ca. Vì vậy, em chọn XGBoost làm mô hình chính thức cho hệ thống."*
 
 ---
 
-## 4:45 – 5:00 (15 giây) | Chốt tổng kết
+## Slide 5: Giải thích mô hình với TreeSHAP (XAI) *(~40 giây)*
 
-> *"Toàn bộ hệ thống đã được viết test tự động bằng `pytest`, kiểm tra qua GitHub Actions CI và đóng gói chạy đồng thời Backend–Frontend bằng Docker Compose. Em xin kết thúc phần trình bày tại đây và rất mong nhận được câu hỏi góp ý từ thầy/cô ạ."*
+> *"Để mô hình không phải là hộp đen, em tích hợp **TreeSHAP** cả trong Notebook lẫn Backend API.*
+>
+> *Ở mức toàn cục (Beeswarm), các yếu tố đẩy rủi ro rời bỏ tăng mạnh nhất là hợp đồng theo tháng, thời gian gắn bó ngắn, dùng cáp quang, thanh toán qua Electronic check và thiếu gói hỗ trợ kỹ thuật.*
+>
+> *Ở mức cục bộ (Waterfall), hệ thống chỉ ra được lý do cụ thể cho từng khách hàng riêng lẻ — ví dụ ca rủi ro cao nhất tập Test đạt 97% — giúp nhân viên CSKH biết chính xác cần tư vấn gì."*
 
+---
+
+## Slide 6: Kiến trúc hệ thống & Demo ứng dụng thực tế *(~1 phút 45 giây — kết hợp demo)*
+
+> *"Cuối cùng, em triển khai mô hình thành hệ thống End-to-End gồm Backend **FastAPI** và giao diện **React** cho nhân viên CSKH (đã deploy lên Render và Vercel).*
+>
+> *(Chuyển sang màn hình web demo):*
+> - *Khi chọn 1 hồ sơ khách hàng, hệ thống trả về ngay xác suất rời bỏ, phân tầng rủi ro, biểu đồ các yếu tố SHAP và gợi ý giữ chân tự động bằng tiếng Việt.*
+> - *Ở phần mô phỏng What-If, khi thử chuyển khách từ hợp đồng theo tháng sang 1 năm hoặc tặng hỗ trợ kỹ thuật, xác suất rời bỏ giảm ngay theo thời gian thực.*
+> - *Với quản lý, tab Phân tích hàng loạt cho phép tải file CSV để thống kê tổng doanh thu có nguy cơ thất thoát, lọc nhóm rủi ro cao và xuất danh sách ưu tiên.*
+>
+> *Toàn bộ dự án đã có kiểm thử tự động bằng `pytest` (6/6 passed), CI trên GitHub Actions và đóng gói Docker Compose. Em xin kết thúc phần trình bày và rất mong nhận được góp ý từ thầy/cô ạ."*

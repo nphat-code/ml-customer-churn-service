@@ -56,6 +56,7 @@ data/*.parquet
 
 # Model artifacts (uncomment if models are > 100MB; otherwise small models can be tracked or kept via DVC/Git LFS)
 models/*.joblib
+!models/best_churn_pipeline.joblib
 models/*.pkl
 models/*.onnx
 !models/.gitkeep
